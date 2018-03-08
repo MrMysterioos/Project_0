@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<Resources>
+	<Textures>
+    <sprite id="menuBackgroung" path="textures/background.png" />
+    <sprite id="Warior" path="textures/Warior.png" />
+    <spriteSheet path="textures/idle_anim.plist" />
+	</Textures>
+</Resources>
