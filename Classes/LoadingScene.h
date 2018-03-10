@@ -8,13 +8,19 @@ using namespace ui;
 
 class LoadingScene : public Scene {
 public:
-	static Scene* createScene();
+	static Scene* createScene(Scene* replaceScene);
 
 	virtual bool init() override;
+
+	virtual void update(float dt) override;
+
+	~LoadingScene();
 
 	CREATE_FUNC(LoadingScene);
 
 private:
+	bool _loadProcess();
+
 	bool _loadRes();
 
 	bool _loadSprite(std::string id, std::string path);
@@ -23,4 +29,8 @@ private:
 
 private:
 	LoadingBar* _loadingBar;
+
+	Scene* _replaceScene;
+
+	bool _done;
 };

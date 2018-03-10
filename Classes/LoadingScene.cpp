@@ -5,11 +5,16 @@
 USING_NS_CC;
 using namespace ui;
 
-Scene* LoadingScene::createScene() {
-	return LoadingScene::create();
+Scene* LoadingScene::createScene(Scene* replaceScene) {
+	auto scene = LoadingScene::create();
+	scene->_replaceScene = replaceScene;
+	scene->_replaceScene->retain();
+	return scene;
 }
 
 bool LoadingScene::init() {
+
+	_done = false;
 
 	auto dir = Director::getInstance();
 	auto size = dir->getVisibleSize();
@@ -21,24 +26,17 @@ bool LoadingScene::init() {
 	_loadingBar->setDirection(LoadingBar::Direction::RIGHT);
 	_loadingBar->setPercent(0);
 
-	this->addChild(_loadingBar);
+	this->addChild(_loadingBar, 0);
 
-	_loadRes();
+	auto circle = Sprite::create("loading_circle.png");
+	circle->setPosition(Vec2(size.width / 2, size.height / 2));
 
-	Sprite* test1 = Sprite::createWithSpriteFrameName("menuBackgroung");
-	this->addChild(test1, 1);
+	this->addChild(circle, 0);
 
-	Sprite* test2 = Sprite::createWithSpriteFrameName("warior_idle1.png");
-	test2->setPosition(Vec2(size.width / 2, size.height / 2));
-	test2->setScale(5);
-	this->addChild(test2, 2);
+	auto turn = RotateBy::create(1, Vec3(0, 0, 180));
+	circle->runAction(RepeatForever::create(turn));
 
-	Sprite* test3 = Sprite::createWithSpriteFrameName("Warior");
-	test3->setPosition(Vec2(size.width / 2 + 300, size.height / 2));
-	test3->setScale(5);
-	Texture2D::TexParams texParams = { GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE };
-	test3->getTexture()->setTexParameters(texParams);
-	this->addChild(test3, 3);
+	this->scheduleUpdate();
 
 	return true;
 }
@@ -62,7 +60,7 @@ bool LoadingScene::_loadRes() {
 					std::string path = text->Attribute("path");
 					_loadSprite(id, path);
 				}
-				if (name == "spriteSheet") {
+				else if (name == "spriteSheet") {
 					std::string path = text->Attribute("path");
 					_loadSpriteSheet(path);
 				}
@@ -72,6 +70,64 @@ bool LoadingScene::_loadRes() {
 	}
 
 	return true;
+}
+
+bool LoadingScene::_loadProcess() {
+	typedef tinyxml2::XMLDocument XMLDoc;
+	typedef tinyxml2::XMLElement XMLNode;
+
+	static XMLDoc* doc;
+	if (doc == nullptr) {
+		doc = new XMLDoc();
+		doc->LoadFile("Resources.xml");
+	}
+
+	static XMLNode* root, *group, *element;
+	if (root == nullptr) {
+		root = doc->FirstChildElement();
+		if (root) {
+			group = root->FirstChildElement();
+			if (group) {
+				element = group->FirstChildElement();
+			}
+		}
+	}
+
+	if (group == nullptr) {
+		root = group = element = nullptr;
+		delete doc;
+		return true;
+	}
+
+	while (element == nullptr) {
+		group = group->NextSiblingElement();
+		if (group) {
+			element = group->FirstChildElement();
+		}
+		else {
+			root = group = element = nullptr;
+			delete doc;
+			return true;
+		}
+	}
+
+	std::string groupName = group->Name();
+	if (groupName == "Textures") {
+		std::string name = element->Name();
+		if (name == "sprite") {
+			std::string id = element->Attribute("id");
+			std::string path = element->Attribute("path");
+			_loadSprite(id, path);
+		}
+		else if (name == "spriteSheet") {
+			std::string path = element->Attribute("path");
+			_loadSpriteSheet(path);
+		}
+	}
+
+	element = element->NextSiblingElement();
+	return false;
+
 }
 
 bool LoadingScene::_loadSprite(std::string id, std::string path) {
@@ -90,4 +146,19 @@ bool LoadingScene::_loadSpriteSheet(std::string path) {
 	cache->addSpriteFramesWithFile(path);
 
 	return true;
+}
+
+void LoadingScene::update(float dt) {
+	if (!_done) {
+		if (_loadProcess()) {
+			_done = true;
+		}
+	}
+	else {
+		Director::getInstance()->replaceScene(_replaceScene);
+	}
+}
+
+LoadingScene::~LoadingScene() {
+	_replaceScene->release();
 }

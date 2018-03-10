@@ -18,11 +18,17 @@ bool MenuScene::init()
 		return false;
 	}
 
+	return true;
+}
+
+void MenuScene::onEnter() {
+	Scene::onEnter();
+
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
 	// add background
-	auto sprite = Sprite::create("Pixel.png");
+	auto sprite = Sprite::createWithSpriteFrameName("menuBackground");
 	sprite->setAnchorPoint(Vec2(0, 0.5));
 	sprite->setPosition(Vec2(0, visibleSize.height / 2));
 	sprite->setScale(visibleSize.width / sprite->getContentSize().width);
@@ -50,10 +56,7 @@ bool MenuScene::init()
 	exitButton->setPosition(150, 200);
 	exitButton->setCallback(CC_CALLBACK_1(MenuScene::menuCloseCallback, this));
 	mainMenu->addChild(exitButton);
-
-	return true;
 }
-
 
 void MenuScene::menuCloseCallback(Ref* pSender)
 {
