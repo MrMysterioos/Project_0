@@ -56,6 +56,13 @@ void MenuScene::onEnter() {
 	exitButton->setPosition(150, 200);
 	exitButton->setCallback(CC_CALLBACK_1(MenuScene::menuCloseCallback, this));
 	mainMenu->addChild(exitButton);
+
+	// alising test
+	Sprite* test = Sprite::createWithSpriteFrameName("Warior");
+	test->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
+	test->setScale(4);
+
+	this->addChild(test);
 }
 
 void MenuScene::menuCloseCallback(Ref* pSender)
