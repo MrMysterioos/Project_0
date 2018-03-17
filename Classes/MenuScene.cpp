@@ -58,7 +58,7 @@ void MenuScene::onEnter() {
 	mainMenu->addChild(exitButton);
 
 	// alising test
-	Sprite* test = Sprite::createWithSpriteFrameName("Warior");
+	Sprite* test = Sprite::createWithSpriteFrameName("warior");
 	test->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
 	test->setScale(4);
 
