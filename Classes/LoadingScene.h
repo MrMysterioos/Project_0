@@ -19,15 +19,6 @@ public:
 	CREATE_FUNC(LoadingScene);
 
 private:
-	bool _loadProcess();
-
-	bool _loadRes();
-
-	bool _loadSprite(std::string id, std::string path);
-
-	bool _loadSpriteSheet(std::string path);
-
-private:
 	LoadingBar* _loadingBar;
 
 	Scene* _replaceScene;

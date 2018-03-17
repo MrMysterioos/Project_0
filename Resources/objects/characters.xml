@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Characters>
+  
+  <character id="villager">
+    <properties health ="10" speed="10" damage="10" />
+    <sprite name="villager" />
+    <animations>
+      <animation run="villager_idle" while="idle" />
+      <animation run="villager_walk" while="walk" />
+      <animation run="villager_run" while="run" />
+      <animation run="villager_jump" while="jump" />
+    </animations>
+  </character>
+  
+  <character id="guard">
+    <properties health ="40" speed="10" damage="20" />
+    <sprite name="guard" />
+    <animations>
+      <animation run="guard_idle" while="idle" />
+      <animation run="guard_walk" while="walk" />
+      <animation run="guard_run" while="run" />
+      <animation run="guard_jump" while="jump" />
+    </animations>
+  </character>
+  
+  <character id="warior">
+    <properties health ="30" speed="20" damage="30" />
+    <sprite name="warior" />
+    <animations>
+      <animation run="warior_idle" while="idle" />
+      <animation run="warior_walk" while="walk" />
+      <animation run="warior_run" while="run" />
+      <animation run="warior_jump" while="jump" />
+    </animations>
+  </character>
+  
+</Characters>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Campfires>
+
+  <campfire id="small_campfire">
+    <sprite name="small_campfire" />
+    <animations>
+      <animation run="small_campfire_burns" while="burns" />
+      <animation run="small_campfire_no_burns" while="no_burns" />
+    </animations>
+  </campfire>
+
+  <campfire id="large_campfire">
+    <sprite name="large_campfire" />
+    <animations>
+      <animation run="large_campfire_burns" while="burns" />
+      <animation run="large_campfire_no_burns" while="no_burns" />
+    </animations>
+  </campfire>
+
+</Campfires>
