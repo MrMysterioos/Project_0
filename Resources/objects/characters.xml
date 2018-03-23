@@ -2,7 +2,7 @@
 <Characters>
   
   <character id="villager">
-    <properties health ="10" speed="10" damage="10" />
+    <properties health ="10" speed="10" damage="5" />
     <sprite name="villager" />
     <animations>
       <animation run="villager_idle" while="idle" />
@@ -13,7 +13,7 @@
   </character>
   
   <character id="guard">
-    <properties health ="40" speed="10" damage="20" />
+    <properties health ="40" speed="10" damage="10" />
     <sprite name="guard" />
     <animations>
       <animation run="guard_idle" while="idle" />
@@ -24,7 +24,7 @@
   </character>
   
   <character id="warior">
-    <properties health ="30" speed="20" damage="30" />
+    <properties health ="30" speed="20" damage="15" />
     <sprite name="warior" />
     <animations>
       <animation run="warior_idle" while="idle" />

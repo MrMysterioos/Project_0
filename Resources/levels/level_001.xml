@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Level>
+  <map name="map_001" />
+  <actors>
+    <character id="Sven">
+      <default template="villager" name="Sven" behavior="passive"/>
+      
+    </character>
+    <character id="Copa">
+      <default template="warior" name="Copa" behavior="aggressive"/>
+    
+    </character>
+    <chest id="chest">
+      <default template="wood_chest" name="mystery chest" />
+      
+    </chest>
+    <campfire id="campfire">
+      <default template="small_campfire" name="campfire" />
+    
+    </campfire>
+  </actors>
+  <quest>
+    <act id="0">
+      <dalog file="dialog_001" initiator="Sven">
+        <return id="1" next_act="1" />
+        <return id="2" final="0" />
+      </dalog>
+    </act>
+    <act id="1">
+      <battle file="battle_001" initiator="Copa">
+        <return id="1" next_act="2" />
+      </battle>
+    </act>
+    <act id="2">
+      <dialog file="dialog_002" initiator="Sven">
+        <return id="1" final="1" />
+      </dialog>
+    </act>
+    <final id="0">
+      <reward>
+        <resources gold="5" provision="10" experience="10" />
+      </reward>
+    </final>
+    <final id="1">
+      <reward>
+        <resources gold="30" provision="5" experience="50" />
+        <artifact id="magic_staf" />
+      </reward>
+    </final>
+  </quest>
+</Level>

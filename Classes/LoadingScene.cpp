@@ -211,7 +211,7 @@ bool _loadCharacters() {
 		XMLNode* character = characters->FirstChildElement("character");
 		while (character) {
 			std::string id = character->Attribute("id");
-			CharacterTemplate temp;
+			CharInfo temp;
 
 			XMLNode* properties = character->FirstChildElement("properties");
 			if (properties) {
@@ -259,7 +259,7 @@ bool _loadContainers() {
 		XMLNode* container = containers->FirstChildElement("container");
 		while (container) {
 			std::string id = container->Attribute("id");
-			ContainerTemplate temp;
+			ContInfo temp;
 
 			XMLNode* sprite = container->FirstChildElement("sprite");
 			if (sprite) {
@@ -300,7 +300,7 @@ bool _loadCampfires() {
 		XMLNode* campfire = campfires->FirstChildElement("campfire");
 		while (campfire) {
 			std::string id = campfire->Attribute("id");
-			CampfireTemplate temp;
+			FireInfo temp;
 
 			XMLNode* sprite = campfire->FirstChildElement("sprite");
 			if (sprite) {

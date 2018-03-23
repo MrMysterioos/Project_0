@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Save>
+  <heroes>
+    <hero template="warior" health ="30" speed="10" damage="20" level="3" experience="25" />
+    <hero template="villager" health ="10" speed="10" damage="10" level="3" experience="25" />
+  </heroes>
+  <artifacts>
+    <artifact id="elder_scroll" />
+  </artifacts>
+  <resources total_time="72" gold="10" provision="15" />
+  <level file="level_001" act_id="0" />
+</Save>
