@@ -5,16 +5,17 @@
 USING_NS_CC;
 
 struct ObjectInfo {
-	std::string spriteName;
+	std::string name, spriteName;
 	std::map<std::string, std::string> animationNames;
 };
 
 struct CharInfo : public ObjectInfo {
 	int health, speed, damage, level, experience;
+	std::string team;
 };
 
 struct ContInfo : public ObjectInfo {
-	std::vector<std::string> loot;
+	
 };
 
 struct FireInfo : public ObjectInfo {

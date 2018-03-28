@@ -1,51 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Level>
-  <map name="map_001" />
+  
+  <map file="map_001.tmx" />
+  
   <actors>
-    <character id="Sven">
-      <default template="villager" name="Sven" behavior="passive"/>
-      
-    </character>
-    <character id="Copa">
-      <default template="warior" name="Copa" behavior="aggressive"/>
     
-    </character>
-    <chest id="chest">
-      <default template="wood_chest" name="mystery chest" />
-      
-    </chest>
-    <campfire id="campfire">
-      <default template="small_campfire" name="campfire" />
+    <actor id="Sven">
+      <default>
+        <character template="villager" name="Sven" team="neutral" />
+      </default>
+      <change act_id="2">
+        <character template="villager" name="Sven" team="friend" />
+      </change>
+    </actor>
     
-    </campfire>
+    <actor id="Copa">
+      <default>
+        <character template="warior" name="Copa" team="nautral" />
+      </default>
+      <change act_id="1">
+        <character template="warior" name="Copa" team="enemy" />
+      </change>
+    </actor>
+    
+    <actor id="Roka">
+      <default>
+        <character template="warior" name="Roka" team="nautral" />
+      </default>
+      <change act_id="1">
+        <character template="warior" name="Roka" team="enemy" />
+      </change>
+    </actor>
+    
+    <actor id="chest">
+      <default>
+        <container template="wood_chest" name="mystery chest" />
+      </default>
+    </actor>
+    
+    <actor id="campfire">
+      <default>
+        <campfire template="small_campfire" name="campfire" />
+      </default>
+    </actor>
+    
   </actors>
+  
   <quest>
+    
     <act id="0">
-      <dalog file="dialog_001" initiator="Sven">
-        <return id="1" next_act="1" />
-        <return id="2" final="0" />
-      </dalog>
+      <transition>
+        <tasks>
+          <talk target="Sven" file="dialog_001" result="1" />
+        </tasks>
+        <next id="1" final="false" />
+      </transition>
+      <transition>
+        <tasks>
+          <talk target="Sven" file="dialog_001" result="2" />
+        </tasks>
+        <next id="0" final="true" />
+      </transition>
     </act>
+    
     <act id="1">
-      <battle file="battle_001" initiator="Copa">
-        <return id="1" next_act="2" />
-      </battle>
+      <transition>
+        <tasks>
+          <defeat target="Copa" />
+          <defeat target="Roka" />
+        </tasks>
+        <next id="2" final="true" />
+      </transition>
     </act>
+    
     <act id="2">
-      <dialog file="dialog_002" initiator="Sven">
-        <return id="1" final="1" />
-      </dialog>
+      <transition>
+        <tasks>
+          <talk target="Sven" file="dialog_002" result="1" />
+        </tasks>
+      </transition>
+      <next id="1" final="true" />
     </act>
-    <final id="0">
-      <reward>
+    
+    <reward id="0">
         <resources gold="5" provision="10" experience="10" />
-      </reward>
-    </final>
-    <final id="1">
-      <reward>
+    </reward>
+    
+    <reward id="1">
         <resources gold="30" provision="5" experience="50" />
         <artifact id="magic_staf" />
-      </reward>
-    </final>
+    </reward>
+    
   </quest>
+  
 </Level>
