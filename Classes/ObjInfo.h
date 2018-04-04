@@ -4,22 +4,32 @@
 
 USING_NS_CC;
 
-struct ObjectInfo {
+class ObjectInfo : public Ref {
+public:
 	std::string name, spriteName;
 	std::map<std::string, std::string> animationNames;
 };
 
-struct CharInfo : public ObjectInfo {
+class CharInfo : public ObjectInfo {
+public:
+	static CharInfo* create(std::string id);
+
+public:
 	int health, speed, damage, level, experience;
 	std::string team;
 };
 
-struct ContInfo : public ObjectInfo {
-	
+class ContInfo : public ObjectInfo {
+public:
+	static ContInfo* create(std::string id);
 };
 
-struct FireInfo : public ObjectInfo {
+class FireInfo : public ObjectInfo {
+public:
+	static FireInfo* create(std::string id);
 };
 
-struct ArtifactInfo : public ObjectInfo {
+class ArtifactInfo : public ObjectInfo {
+public:
+	static ArtifactInfo* create(std::string id);
 };

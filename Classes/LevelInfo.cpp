@@ -4,8 +4,44 @@
 
 USING_NS_CC;
 
-LevelInfo::LevelInfo(std::string file) {
-	initWithFile(file);
+Talk* Talk::create() {
+	Talk* ret = new (std::nothrow) Talk();
+	ret->autorelease();
+	return ret;
+}
+
+Defeat* Defeat::create() {
+	Defeat* ret = new (std::nothrow) Defeat();
+	ret->autorelease();
+	return ret;
+}
+
+TransÑondition* TransÑondition::create() {
+	TransÑondition* ret = new (std::nothrow) TransÑondition();
+	ret->autorelease();
+	return ret;
+}
+
+Act* Act::create() {
+	Act* ret = new (std::nothrow) Act();
+	ret->autorelease();
+	return ret;
+}
+
+Reward* Reward::create() {
+	Reward* ret = new (std::nothrow) Reward();
+	ret->autorelease();
+	return ret;
+}
+
+LevelInfo*  LevelInfo::create(std::string file) {
+	LevelInfo* ret = new (std::nothrow) LevelInfo();
+	if (ret->initWithFile(file)) {
+		ret->autorelease();
+		return ret;
+	}
+	CC_SAFE_DELETE(ret);
+	return nullptr;
 }
 
 bool LevelInfo::initWithFile(std::string file) {
@@ -33,74 +69,41 @@ bool LevelInfo::initWithFile(std::string file) {
 			XMLNode* eActor = eActors->FirstChildElement("actor");
 			while (eActor) {
 				std::string actorId = eActor->Attribute("id");
-				Role tempRole;
-				// ñ÷èòûâàåì ñòàíäàğòíîå ïîâåäåíèå
-				XMLNode* eDefault = eActor->FirstChildElement("default");
-				if (eDefault) {
-
-					XMLNode* eObjInf = eDefault->FirstChildElement();
-					if (eObjInf) {
-
-						std::string name = eObjInf->Name();
-
-						if (name == "character") {
-							std::string charTemp = eObjInf->Attribute("template");
-							CharInfo charInf = ObjectManager::getInstance()->getCharacterTemplate(charTemp);
-							charInf.name = eObjInf->Attribute("name");
-							charInf.team = eObjInf->Attribute("team");
-							tempRole.default = charInf;
-						}
-						else if (name == "container") {
-							std::string contTemp = eObjInf->Attribute("template");
-							ContInfo contInf = ObjectManager::getInstance()->getContainerTemplate(contTemp);
-							contInf.name = eObjInf->Attribute("name");
-							tempRole.default = contInf;
-						}
-						else if (name == "campfire") {
-							std::string fireTemp = eObjInf->Attribute("template");
-							FireInfo fireInf = ObjectManager::getInstance()->getCampfireTemplate(fireTemp);
-							fireInf.name = eObjInf->Attribute("name");
-							tempRole.default = fireInf;
-						}
-
-					}
-
-				}
+				std::map<int, std::shared_ptr<ObjectInfo>> tempRole;
 				// ñ÷èòûâàåì èçìåíåíèÿ â ïîâåäåíèè
-				XMLNode* eChange = eActor->FirstChildElement("change");
-				if (eChange) {
-					int actId = atoi(eChange->Attribute("act_id"));
+				XMLNode* eBehavior = eActor->FirstChildElement("behavior");
+				if (eBehavior) {
+					int actId = atoi(eBehavior->Attribute("act_id"));
 
-					XMLNode* eObjInf = eChange->FirstChildElement();
+					XMLNode* eObjInf = eBehavior->FirstChildElement();
 					if (eObjInf) {
 
 						std::string name = eObjInf->Name();
 
 						if (name == "character") {
 							std::string charTemp = eObjInf->Attribute("template");
-							CharInfo charInf = ObjectManager::getInstance()->getCharacterTemplate(charTemp);
-							charInf.name = eObjInf->Attribute("name");
-							charInf.team = eObjInf->Attribute("team");
-							tempRole.changes.insert(std::pair<int, CharInfo>(actId, charInf));
+							std::shared_ptr<CharInfo> charInf = std::make_shared<CharInfo>();
+							charInf->name = eObjInf->Attribute("name");
+							charInf->team = eObjInf->Attribute("team");
+							tempRole.insert(std::pair<int, std::shared_ptr<ObjectInfo>>(actId, charInf));
 						}
 						else if (name == "container") {
 							std::string contTemp = eObjInf->Attribute("template");
-							ContInfo contInf = ObjectManager::getInstance()->getContainerTemplate(contTemp);
-							contInf.name = eObjInf->Attribute("name");
-							tempRole.changes.insert(std::pair<int, ContInfo>(actId, contInf));
+							std::shared_ptr<ContInfo> contInf = std::make_shared<ContInfo>();
+							contInf->name = eObjInf->Attribute("name");
+							tempRole.insert(std::pair<int, std::shared_ptr<ObjectInfo>>(actId, contInf));
 						}
 						else if (name == "campfire") {
 							std::string fireTemp = eObjInf->Attribute("template");
-							FireInfo fireInf = ObjectManager::getInstance()->getCampfireTemplate(fireTemp);
-							fireInf.name = eObjInf->Attribute("name");
-							tempRole.changes.insert(std::pair<int, FireInfo>(actId, fireInf));
+							std::shared_ptr<FireInfo> fireInf = std::make_shared<FireInfo>();
+							fireInf->name = eObjInf->Attribute("name");
+							tempRole.insert(std::pair<int, std::shared_ptr<ObjectInfo>>(actId, fireInf));
 						}
 
 					}
 
 				}
-				// !!!ÓÁĞÀÒÜ ÏÎÂÒÎĞßŞÙÈÉÑß ÊÎÄ!!! (åñëè ıòî âîçìîæíî)
-				_actors.insert(std::pair<std::string, Role>(actorId, tempRole));
+				_actors.insert(std::pair<std::string, std::map<int, std::shared_ptr<ObjectInfo>>>(actorId, tempRole));
 				eActor = eActor->NextSiblingElement();
 			}
 		}
@@ -115,7 +118,7 @@ bool LevelInfo::initWithFile(std::string file) {
 
 				XMLNode* eTrans = eAct->FirstChildElement("transition");
 				while (eTrans) {
-					TransÑondition tempTrans;
+					TransÑondition* tempTrans = TransÑondition::create();
 
 					XMLNode* eTasks = eTrans->FirstChildElement("tasks");
 					if (eTasks) {
@@ -125,17 +128,17 @@ bool LevelInfo::initWithFile(std::string file) {
 							std::string name = eTask->Name();
 
 							if (name == "talk") {
-								Talk talk;
-								talk.target = eTask->Attribute("target");
-								talk.dialogFile = eTask->Attribute("file");
-								talk.result = atoi(eTask->Attribute("result"));
-								tempTrans.tasks.push_back(talk);
+								Talk* talk = Talk::create();
+								talk->target = eTask->Attribute("target");
+								talk->dialogFile = eTask->Attribute("file");
+								talk->result = atoi(eTask->Attribute("result"));
+								tempTrans->tasks.push_back(talk);
 							}
 
 							if (name == "defeat") {
-								Defeat def;
-								def.target = eTask->Attribute("target");
-								tempTrans.tasks.push_back(def);
+								Defeat* def = Defeat::create();
+								def->target = eTask->Attribute("target");
+								tempTrans->tasks.push_back(def);
 							}
 
 							eTask = eTask->NextSiblingElement();

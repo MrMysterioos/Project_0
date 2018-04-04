@@ -6,42 +6,42 @@
   <actors>
     
     <actor id="Sven">
-      <default>
+      <behavior act_id="-1">
         <character template="villager" name="Sven" team="neutral" />
-      </default>
-      <change act_id="2">
+      </behavior>
+      <behavior act_id="2">
         <character template="villager" name="Sven" team="friend" />
-      </change>
+      </behavior>
     </actor>
     
     <actor id="Copa">
-      <default>
+      <behavior act_id="-1">
         <character template="warior" name="Copa" team="nautral" />
-      </default>
-      <change act_id="1">
+      </behavior>
+      <behavior act_id="1">
         <character template="warior" name="Copa" team="enemy" />
-      </change>
+      </behavior>
     </actor>
     
     <actor id="Roka">
-      <default>
+      <behavior act_id="-1">
         <character template="warior" name="Roka" team="nautral" />
-      </default>
-      <change act_id="1">
+      </behavior>
+      <behavior act_id="1">
         <character template="warior" name="Roka" team="enemy" />
-      </change>
+      </behavior>
     </actor>
     
     <actor id="chest">
-      <default>
+      <behavior act_id="-1">
         <container template="wood_chest" name="mystery chest" />
-      </default>
+      </behavior>
     </actor>
     
     <actor id="campfire">
-      <default>
+      <behavior act_id="-1">
         <campfire template="small_campfire" name="campfire" />
-      </default>
+      </behavior>
     </actor>
     
   </actors>

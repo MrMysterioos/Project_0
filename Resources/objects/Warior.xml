@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Object>
+  <sprite source="textures/Warior.png" />
+  <animations>
+    <animation source="animations/warior_idle.xml" key="idle" />
+    <animation source="animations/warior_walk.xml" key="walk" />
+    <animation source="animations/warior_run.xml" key="run" />
+  </animations>
+</Object>

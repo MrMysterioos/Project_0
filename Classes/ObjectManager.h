@@ -4,7 +4,33 @@
 #include "ObjInfo.h"
 
 USING_NS_CC;
+// класс визуального объекта, €вл€ющийс€
+// графическим представлением любого видимого узла на карте
+class VisualObject : public Ref {
+public:
+	static VisualObject* create(std::string source);
 
+	bool initWithFile(std::string source);
+
+	bool loadSpriteFrame(std::string source);
+	bool loadAnimation(std::string key, std::string source);
+
+	void setSpriteFrame(SpriteFrame* frame);
+	void addAnimation(std::string key, Animation* anim);
+
+	SpriteFrame* getSpriteFrame();
+	Animation* getAnimation(std::string key);
+
+	~VisualObject() {
+		_baseSpriteFrame->release();
+	}
+
+private:
+	SpriteFrame* _baseSpriteFrame;
+	Map<std::string, Animation*> _animations;
+
+};
+// класс, управл€ющий визуальными объектами
 class ObjectManager : public Ref {
 public:
 	
@@ -14,32 +40,12 @@ public:
 	
 	bool init();
 
-	void addCharacterTemplate(std::string key, CharInfo temp)
-	{
-		_characters.insert(std::pair<std::string, CharInfo>(key, temp));
-	}
+	bool loadObject(std::string key, std::string source);
 
-	void addContainerTemplate(std::string key, ContInfo temp)
-	{
-		_containers.insert(std::pair<std::string, ContInfo>(key, temp));
-	}
-
-	void addCampfireTemplate(std::string key, FireInfo temp)
-	{
-		_campfires.insert(std::pair<std::string, FireInfo>(key, temp));
-	}
-
-	CharInfo getCharacterTemplate(std::string key)
-	{ return _characters.at(key); }
-	ContInfo getContainerTemplate(std::string key)
-	{ return _containers.at(key); }
-	FireInfo getCampfireTemplate(std::string key)
-	{ return _campfires.at(key); }
+	VisualObject* getVisualObject(std::string key);
 
 private:
 
-	std::map<std::string, CharInfo>  _characters;
-	std::map<std::string, ContInfo>  _containers;
-	std::map<std::string, FireInfo>  _campfires;
+	Map<std::string, VisualObject*> _objects;
 
 };

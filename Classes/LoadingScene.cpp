@@ -14,12 +14,16 @@ bool _loadSprite(std::string id, std::string path);
 bool _loadSpriteSheet(std::string path);
 // загрузка анимации
 bool _loadAnimation(std::string id, std::string path);
+// загрузка визуального объекта
+bool _loadObject(std::string key, std::string source);
+/*
 // загрузка шаблонов персонажей
 bool _loadCharacters();
 // загрузка шаблонов контейнеров
 bool _loadContainers();
 // загрузка шаблонов костров
 bool _loadCampfires();
+*/
 
 Scene* LoadingScene::createScene(Scene* replaceScene) {
 	auto scene = LoadingScene::create();
@@ -64,9 +68,7 @@ void LoadingScene::update(float dt) {
 		}
 	}
 	else {
-		_loadCharacters();
-		_loadContainers();
-		_loadCampfires();
+		_loadObject("Warior", "objects/Warior.xml");
 		Director::getInstance()->replaceScene(_replaceScene);
 	}
 }
@@ -198,6 +200,13 @@ bool _loadAnimation(std::string id, std::string path) {
 
 }
 
+bool _loadObject(std::string key, std::string source) {
+	auto objm = ObjectManager::getInstance();
+	objm->loadObject(key, source);
+	return true;
+}
+
+/*
 bool _loadCharacters() {
 
 	typedef tinyxml2::XMLDocument XMLDoc;
@@ -328,3 +337,4 @@ bool _loadCampfires() {
 	}
 	return true;
 }
+*/

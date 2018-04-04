@@ -27,7 +27,7 @@ bool GameInfo::init() {
 
 	return true;
 }
-
+/*
 bool GameInfo::initWithFile(std::string file) {
 	typedef tinyxml2::XMLDocument XMLDoc;
 	typedef tinyxml2::XMLElement XMLNode;
@@ -97,3 +97,4 @@ bool GameInfo::initWithFile(std::string file) {
 
 	return true;
 }
+*/
