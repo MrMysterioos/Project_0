@@ -2,6 +2,7 @@
 
 #include "cocos2d.h"
 #include "ObjInfo.h"
+#include "LevelInfo.h"
 
 USING_NS_CC;
 
@@ -14,15 +15,23 @@ public:
 
 	bool init();
 	// функция, которая загружает сохраненные данные из файла.
-	// при записи аргумента не нужно указывать директорию.
-	bool initWithFile(std::string file);
+	// в аргументе указывается дирректория.
+	bool initWithFile(std::string source);
+
+	inline Vector<Behavior*> getHeroes() { return _heroes; }
+	inline std::vector<std::string> getArtifacts() { return _artifacts; }
+	inline int getGolg() { return _gold; } 
+	inline int getTotalTime() { return _totalTime; } 
+	inline int getProvision() { return _provision; }
+	inline LevelInfo* getLevel() { return _level; }
+	inline int getCurAct() { return _curAct; }
 
 private:
 
-	std::vector<CharInfo> _heroes;
+	Vector<Behavior*> _heroes;
 	std::vector<std::string> _artifacts;
 	int _totalTime, _gold, _provision;
-	std::string _level;
+	LevelInfo* _level;
 	int _curAct;
 
 };

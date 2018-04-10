@@ -34,6 +34,12 @@ Reward* Reward::create() {
 	return ret;
 }
 
+Role* Role::create() {
+	Role* ret = new (std::nothrow) Role();
+	ret->autorelease();
+	return ret;
+}
+
 LevelInfo*  LevelInfo::create(std::string file) {
 	LevelInfo* ret = new (std::nothrow) LevelInfo();
 	if (ret->initWithFile(file)) {
@@ -44,14 +50,14 @@ LevelInfo*  LevelInfo::create(std::string file) {
 	return nullptr;
 }
 
-bool LevelInfo::initWithFile(std::string file) {
+bool LevelInfo::initWithFile(std::string source) {
 	typedef tinyxml2::XMLDocument XMLDoc;
 	typedef tinyxml2::XMLElement XMLNode;
 
-	std::string path = "levels/" + file;
+	std::string levelSource = source + "/level.xml";
 
 	XMLDoc doc;
-	doc.LoadFile(path.c_str());
+	doc.LoadFile(levelSource.c_str());
 	if (doc.Error()) {
 		return false;
 	}
@@ -61,7 +67,7 @@ bool LevelInfo::initWithFile(std::string file) {
 		// запоминаем название файла карты
 		XMLNode* eMap = eLvl->FirstChildElement("map");
 		if (eMap) {
-			_mapFile = eMap->Attribute("file");
+			_mapFile = eMap->Attribute("source");
 		}
 		// распределяем роли
 		XMLNode* eActors = eLvl->FirstChildElement("actors");
@@ -69,41 +75,40 @@ bool LevelInfo::initWithFile(std::string file) {
 			XMLNode* eActor = eActors->FirstChildElement("actor");
 			while (eActor) {
 				std::string actorId = eActor->Attribute("id");
-				std::map<int, std::shared_ptr<ObjectInfo>> tempRole;
+				Role* tempRole = Role::create();
 				// считываем изменения в поведении
 				XMLNode* eBehavior = eActor->FirstChildElement("behavior");
-				if (eBehavior) {
+				while (eBehavior) {
 					int actId = atoi(eBehavior->Attribute("act_id"));
 
-					XMLNode* eObjInf = eBehavior->FirstChildElement();
-					if (eObjInf) {
+					Behavior* behav = Behavior::create();
 
-						std::string name = eObjInf->Name();
+					std::string objectsSource = source + "/objects.xml";
+					XMLDoc objDoc;
+					objDoc.LoadFile(objectsSource.c_str());
+					std::string tempId = eBehavior->Attribute("template");
+					ObjectInfo* objInfo = ObjectInfo::create(objDoc, tempId);
+					behav->baseObject = objInfo;
 
-						if (name == "character") {
-							std::string charTemp = eObjInf->Attribute("template");
-							std::shared_ptr<CharInfo> charInf = std::make_shared<CharInfo>();
-							charInf->name = eObjInf->Attribute("name");
-							charInf->team = eObjInf->Attribute("team");
-							tempRole.insert(std::pair<int, std::shared_ptr<ObjectInfo>>(actId, charInf));
-						}
-						else if (name == "container") {
-							std::string contTemp = eObjInf->Attribute("template");
-							std::shared_ptr<ContInfo> contInf = std::make_shared<ContInfo>();
-							contInf->name = eObjInf->Attribute("name");
-							tempRole.insert(std::pair<int, std::shared_ptr<ObjectInfo>>(actId, contInf));
-						}
-						else if (name == "campfire") {
-							std::string fireTemp = eObjInf->Attribute("template");
-							std::shared_ptr<FireInfo> fireInf = std::make_shared<FireInfo>();
-							fireInf->name = eObjInf->Attribute("name");
-							tempRole.insert(std::pair<int, std::shared_ptr<ObjectInfo>>(actId, fireInf));
-						}
+					std::string name = eBehavior->Attribute("name");
+					behav->name = name;
 
+					std::string team = eBehavior->Attribute("team");
+					if (team == "friend") {
+						behav->team = FRIEND;
+					}
+					else if (team == "enemy") {
+						behav->team = ENEMY;
+					}
+					else if (team == "neutral") {
+						behav->team = NEUTRAL;
 					}
 
+					tempRole->addBehavior(actId, behav);
+
+					eBehavior = eBehavior->NextSiblingElement("behavior");
 				}
-				_actors.insert(std::pair<std::string, std::map<int, std::shared_ptr<ObjectInfo>>>(actorId, tempRole));
+				_actors.insert(actorId, tempRole);
 				eActor = eActor->NextSiblingElement();
 			}
 		}
@@ -114,12 +119,12 @@ bool LevelInfo::initWithFile(std::string file) {
 			XMLNode* eAct = eQuest->FirstChildElement("act");
 			while (eAct) {
 				int actId = atoi(eAct->Attribute("id"));
-				Act tempAct;
+				Act* tempAct = Act::create();
 
 				XMLNode* eTrans = eAct->FirstChildElement("transition");
 				while (eTrans) {
 					TransСondition* tempTrans = TransСondition::create();
-
+					// загружаем спиок задач
 					XMLNode* eTasks = eTrans->FirstChildElement("tasks");
 					if (eTasks) {
 
@@ -134,8 +139,7 @@ bool LevelInfo::initWithFile(std::string file) {
 								talk->result = atoi(eTask->Attribute("result"));
 								tempTrans->tasks.push_back(talk);
 							}
-
-							if (name == "defeat") {
+							else if (name == "defeat") {
 								Defeat* def = Defeat::create();
 								def->target = eTask->Attribute("target");
 								tempTrans->tasks.push_back(def);
@@ -145,38 +149,46 @@ bool LevelInfo::initWithFile(std::string file) {
 						}
 
 					}
+					// задаем следующий акт
+					XMLNode* eNext = eTrans->FirstChildElement("next");
+					if (eNext) {
+						int nextId = eNext->IntAttribute("id");
+						bool bFinal = eNext->BoolAttribute("final");
+						tempTrans->next = nextId;
+						tempTrans->final = bFinal;
+					}
 
-					tempAct.trans.push_back(tempTrans);
+					tempAct->trans.push_back(tempTrans);
 					eTrans = eTrans->NextSiblingElement("transition");
 				}
 
-				_quest.insert(std::pair<int, Act>(actId, tempAct));
+				_quest.insert(actId, tempAct);
 				eAct = eAct->NextSiblingElement("act");
 			}
 			// награды в зависимости от финала
 			XMLNode* eReward = eQuest->FirstChildElement("reward");
 			while (eReward) {
 				int finalId = atoi(eReward->Attribute("id"));
-				Reward tempRew;
+				Reward* tempRew = Reward::create();
 
 				XMLNode* eAdd = eReward->FirstChildElement();
 				while (eAdd) {
 					std::string name = eAdd->Name();
 
 					if (name == "resources") {
-						tempRew.gold = atoi(eAdd->Attribute("gold"));
-						tempRew.provision = atoi(eAdd->Attribute("provision"));
-						tempRew.experience = atoi(eAdd->Attribute("experience"));
+						tempRew->gold = atoi(eAdd->Attribute("gold"));
+						tempRew->provision = atoi(eAdd->Attribute("provision"));
+						tempRew->experience = atoi(eAdd->Attribute("experience"));
 					}
 					else if (name == "artifact") {
 						std::string id = eAdd->Attribute("id");
-						tempRew.artifacts.push_back(id);
+						tempRew->artifacts.push_back(id);
 					}
 
 					eAdd = eAdd->NextSiblingElement();
 				}
 
-				_rewards.insert(std::pair<int, Reward>(finalId, tempRew));
+				_rewards.insert(finalId, tempRew);
 				eReward = eReward->NextSiblingElement("reward");
 			}
 

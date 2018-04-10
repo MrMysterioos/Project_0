@@ -54,25 +54,35 @@ public:
 	std::vector<std::string> artifacts;
 };
 
+class Role : public Ref {
+public:
+	static Role* create();
+
+	inline void addBehavior(int key, Behavior* behaviour) { _behaviours.insert(key, behaviour); }
+	inline Behavior* getBehavior(int key) { return _behaviours.at(key); }
+private:
+	Map<int, Behavior*> _behaviours;
+};
+
 class LevelInfo : public Ref {
 public:
-	LevelInfo* create(std::string file);
+	static LevelInfo* create(std::string file);
 	// загрузка уровня из файла
 	bool initWithFile(std::string file);
 
 	inline std::string getMapFile() { return _mapFile; }
-	inline std::map<std::string, std::map<int, ObjectInfo>> getActorMap() { _actors; }
-	inline std::map<int, Act> getQuest() { return _quest; }
-	inline std::map<int, Reward> getRewards() { return _rewards; }
+	inline Map<std::string, Role*> getActorMap() { return _actors; }
+	inline Map<int, Act*> getQuest() { return _quest; }
+	inline Map<int, Reward*> getRewards() { return _rewards; }
 
 private:
 	// файл, содержащий TMX карту
 	std::string _mapFile;
 	// ключи в этом контейнере соответствуют ключам объектов в TMX карте
-	std::map<std::string, std::map<int, std::shared_ptr<ObjectInfo>>> _actors;
+	Map<std::string, Role*> _actors;
 	// здесь хранятся квестовые состояния в виде модифицированного списка смежности
-	std::map<int, Act> _quest;
+	Map<int, Act*> _quest;
 	// здесь хранится информация о возможных наградах
-	std::map<int, Reward> _rewards;
+	Map<int, Reward*> _rewards;
 
 };

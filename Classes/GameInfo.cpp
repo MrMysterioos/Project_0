@@ -27,49 +27,45 @@ bool GameInfo::init() {
 
 	return true;
 }
-/*
-bool GameInfo::initWithFile(std::string file) {
+
+bool GameInfo::initWithFile(std::string source) {
 	typedef tinyxml2::XMLDocument XMLDoc;
 	typedef tinyxml2::XMLElement XMLNode;
-	
-	std::string path = "saves/" + file;
+
+	std::string saveSource = source + "/save.xml";
 
 	XMLDoc doc;
-	doc.LoadFile(path.c_str());
+	doc.LoadFile(saveSource.c_str());
 
-	XMLNode* save = doc.FirstChildElement();
-	if (save) {
-		XMLNode* heroes = save->FirstChildElement("heroes");
+	XMLNode* eSave = doc.FirstChildElement("Save");
+	if (eSave) {
+		XMLNode* heroes = eSave->FirstChildElement("heroes");
 		if (heroes) {
-			XMLNode* hero = heroes->FirstChildElement("hero");
-			while (hero) {
+			XMLNode* eHero = heroes->FirstChildElement("hero");
+			while (eHero) {
 				// init heroes
-				ObjectManager* objManer = ObjectManager::getInstance();
+				std::string heroesSource = source + "/heroes.xml";
 
-				std::string templ = hero->Attribute("template");
-				CharInfo temp = objManer->getCharacterTemplate(templ);
+				XMLDoc objDoc;
+				objDoc.LoadFile(heroesSource.c_str());
 
-				int health = atoi(hero->Attribute("health"));
-				temp.health = health;
+				if (objDoc.Error())
+					return false;
 
-				int speed = atoi(hero->Attribute("speed"));
-				temp.speed = speed;
+				std::string tempId = eHero->Attribute("template");
+				ObjectInfo* tempHero = ObjectInfo::create(objDoc, tempId);
 
-				int damage = atoi(hero->Attribute("damage"));
-				temp.damage = damage;
+				Behavior* tempBehav = Behavior::create();
+				tempBehav->baseObject = tempHero;
+				std::string heroName = eHero->Attribute("name");
+				tempBehav->name = heroName;
 
-				int level = atoi(hero->Attribute("level"));
-				temp.level = level;
-
-				int experience = atoi(hero->Attribute("experience"));
-				temp.experience = experience;
-
-				_heroes.push_back(temp);
+				_heroes.pushBack(tempBehav);
 				
-				hero = hero->NextSiblingElement("hero");
+				eHero = eHero->NextSiblingElement("hero");
 			}
 		}
-		XMLNode* artifacts = save->FirstChildElement("artifacts");
+		XMLNode* artifacts = eSave->FirstChildElement("artifacts");
 		if (artifacts) {
 			XMLNode* artifact = artifacts->FirstChildElement("artifact");
 			while (artifact) {
@@ -79,17 +75,19 @@ bool GameInfo::initWithFile(std::string file) {
 				artifact = artifact->NextSiblingElement("artifact");
 			}
 		}
-		XMLNode* resources = save->FirstChildElement("resources");
+		XMLNode* resources = eSave->FirstChildElement("resources");
 		if (resources) {
 			// init res
 			_totalTime = atoi(resources->Attribute("total_time"));
 			_gold = atoi(resources->Attribute("gold"));
 			_provision = atoi(resources->Attribute("provision"));
 		}
-		XMLNode* level = save->FirstChildElement("level");
+		XMLNode* level = eSave->FirstChildElement("level");
 		if (level) {
 			// init level
-			_level = level->Attribute("file");
+			std::string levelSource = level->Attribute("source");
+			LevelInfo* tempLevel = LevelInfo::create(levelSource);
+			_level = tempLevel;
 			_curAct = atoi(level->Attribute("act_id"));
 		}
 
@@ -97,4 +95,3 @@ bool GameInfo::initWithFile(std::string file) {
 
 	return true;
 }
-*/

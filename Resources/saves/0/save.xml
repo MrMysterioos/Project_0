@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Save>
+  <heroes>
+    <hero template="warrior" name="Root" />
+    <hero template="villager" name="Toor" />
+  </heroes>
+  <artifacts>
+    <artifact id="elder_scroll" />
+  </artifacts>
+  <resources total_time="72" gold="10" provision="15" />
+  <level source="levels/level_001" act_id="0" />
+</Save>
