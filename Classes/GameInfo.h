@@ -34,4 +34,7 @@ private:
 	LevelInfo* _level;
 	int _curAct;
 
+private:
+	void _destroy();
+
 };
