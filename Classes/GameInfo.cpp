@@ -18,14 +18,21 @@ GameInfo* GameInfo::getInstance() {
 
 void GameInfo::destroyInstance()
 {
-	CC_SAFE_RELEASE_NULL(_gameInfo);
+	if (!_gameInfo) {
+		_gameInfo->_destroy();
+		CC_SAFE_RELEASE_NULL(_gameInfo);
+	}
 }
 
 bool GameInfo::init() {
 
-
-
 	return true;
+}
+
+void GameInfo::_destroy() {
+	while (_level) {
+		_level->release();
+	}
 }
 
 bool GameInfo::initWithFile(std::string source) {
@@ -88,6 +95,7 @@ bool GameInfo::initWithFile(std::string source) {
 			std::string levelSource = level->Attribute("source");
 			LevelInfo* tempLevel = LevelInfo::create(levelSource);
 			_level = tempLevel;
+			_level->retain();
 			_curAct = atoi(level->Attribute("act_id"));
 		}
 
