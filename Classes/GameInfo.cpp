@@ -1,6 +1,7 @@
 #include "GameInfo.h"
 #include "ObjectManager.h"
 #include "tinyxml2\tinyxml2.h"
+#include <iostream>
 
 USING_NS_CC;
 
