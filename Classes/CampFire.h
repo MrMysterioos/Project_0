@@ -4,9 +4,11 @@
 
 class CampFire : public Actor {
 public:
-	//CampFire(FireInfo);
 	CampFire* createWithName(std::string); // Создание по имени
+	bool initWithName(std::string); //замена присваивания всего-всего в конструкторе (как Кочкин советовал)
 	void interaction();	//взаимодействие с другими объектами
 private:
-	Node* _node; // костёр - это узел
+	//Sprite* _sprite;
+	CampFire();
+	CampFire* _campfire;
 };
