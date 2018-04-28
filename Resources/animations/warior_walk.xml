@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Animation>
+  <general source="textures/Warior_Walk.png" width="64" height="64" duration="0.1"/>
+</Animation>

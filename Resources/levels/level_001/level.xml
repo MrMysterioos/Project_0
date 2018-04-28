@@ -1,47 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Level>
   
-  <map file="map_001.tmx" />
+  <map source="map_001.tmx" />
   
   <actors>
     
     <actor id="Sven">
-      <default>
-        <character template="villager" name="Sven" team="neutral" />
-      </default>
-      <change act_id="2">
-        <character template="villager" name="Sven" team="friend" />
-      </change>
+      <behavior act_id="-1" type="character" template="villager" name="Sven" team="neutral" />
+      <behavior act_id="2" type="character" template="villager" name="Sven" team="friend" />
     </actor>
     
     <actor id="Copa">
-      <default>
-        <character template="warior" name="Copa" team="nautral" />
-      </default>
-      <change act_id="1">
-        <character template="warior" name="Copa" team="enemy" />
-      </change>
+      <behavior act_id="-1" type="character" template="warior" name="Copa" team="neutral" />
+      <behavior act_id="1" type="character" template="warior" name="Copa" team="enemy" />
     </actor>
     
     <actor id="Roka">
-      <default>
-        <character template="warior" name="Roka" team="nautral" />
-      </default>
-      <change act_id="1">
-        <character template="warior" name="Roka" team="enemy" />
-      </change>
+      <behavior act_id="-1" type="character" template="warior" name="Roka" team="neutral" />
+      <behavior act_id="1" type="character" template="warior" name="Roka" team="enemy" />
     </actor>
     
     <actor id="chest">
-      <default>
-        <container template="wood_chest" name="mystery chest" />
-      </default>
+      <behavior act_id="-1" type="container" template="large_wood_chest" name="mystery chest" team="neutral" />
     </actor>
     
     <actor id="campfire">
-      <default>
-        <campfire template="small_campfire" name="campfire" />
-      </default>
+      <behavior act_id="-1" tyep="campfire" template="large_campfire" name="campfire" team="neutral" />
     </actor>
     
   </actors>
@@ -78,8 +62,8 @@
         <tasks>
           <talk target="Sven" file="dialog_002" result="1" />
         </tasks>
+        <next id="1" final="true" />
       </transition>
-      <next id="1" final="true" />
     </act>
     
     <reward id="0">

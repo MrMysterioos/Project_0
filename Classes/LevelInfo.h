@@ -5,56 +5,84 @@
 
 USING_NS_CC;
 
-struct Task {
+class Task : public Ref {
+public:
 	std::string target; // актер, к которому привязана задача
 	
 };
 
-struct Talk : public Task {
+class Talk : public Task {
+public:
+	static Talk* create();
+
+public:
 	std::string dialogFile; // файл содержащий данные о диалоге
 	int result; // результат, который необходимо получить
 
 };
 
-struct Defeat : public Task {
-	
+class Defeat : public Task {
+public:
+	static Defeat* create();
 };
 
-struct TransСondition {
-	std::vector<Task> tasks; // задачи которые дллжен выполнить игрок, для перехода к новому акту
+class TransСondition : public Ref {
+public:
+	static TransСondition* create();
+
+public:
+	std::vector<Task*> tasks; // задачи которые дллжен выполнить игрок, для перехода к новому акту
 	int next; // id сдедующего акта или концовки
 	bool final; // если этот флажок не стоит, значит переходим к следующему акту,
 	// иначе завершаем задание
 };
 
-struct Act {
-	std::vector<TransСondition> trans; // список переходов
+class Act : public Ref {
+public:
+	static Act* create();
+
+public:
+	std::vector<TransСondition*> trans; // список переходов
 };
 
-struct Reward {
+class Reward : public Ref {
+public:
+	static Reward* create();
+
+public:
 	int gold, provision, experience;
 	std::vector<std::string> artifacts;
 };
 
-struct Role {
-	ObjectInfo default; // поведение по умолчанию
-	std::map<int, ObjectInfo> changes; // замены стандартного поведения
+class Role : public Ref {
+public:
+	static Role* create();
+
+	inline void addBehavior(int key, Behavior* behaviour) { _behaviours.insert(key, behaviour); }
+	inline Behavior* getBehavior(int key) { return _behaviours.at(key); }
+private:
+	Map<int, Behavior*> _behaviours;
 };
 
-class LevelInfo {
+class LevelInfo : public Ref {
 public:
-	LevelInfo(std::string file);
+	static LevelInfo* create(std::string file);
 	// загрузка уровня из файла
 	bool initWithFile(std::string file);
+
+	inline std::string getMapFile() { return _mapFile; }
+	inline Map<std::string, Role*> getActorMap() { return _actors; }
+	inline Map<int, Act*> getQuest() { return _quest; }
+	inline Map<int, Reward*> getRewards() { return _rewards; }
 
 private:
 	// файл, содержащий TMX карту
 	std::string _mapFile;
 	// ключи в этом контейнере соответствуют ключам объектов в TMX карте
-	std::map<std::string, Role> _actors;
+	Map<std::string, Role*> _actors;
 	// здесь хранятся квестовые состояния в виде модифицированного списка смежности
-	std::map<int, Act> _quest;
+	Map<int, Act*> _quest;
 	// здесь хранится информация о возможных наградах
-	std::map<int, Reward> _rewards;
+	Map<int, Reward*> _rewards;
 
 };
