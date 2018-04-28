@@ -1,4 +1,4 @@
-#pragma once
+/*#pragma once
 
 #include "Actor.h"
 
@@ -11,4 +11,4 @@ private:
 	//Sprite* _sprite;
 	CampFire();
 	CampFire* _campfire;
-};
+};*/

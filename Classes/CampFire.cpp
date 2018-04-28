@@ -1,4 +1,4 @@
-#include "CampFire.h"
+/*#include "CampFire.h"
 
 USING_NS_CC;
 
@@ -18,5 +18,5 @@ CampFire* CampFire::createWithName(std::string key) {
 bool CampFire::initWithName(std::string key) {
 	FireInfo _info = ObjectManager::getInstance()->getCampfireTemplate(key);
 	_sprite = Sprite::createWithSpriteFrameName(_info.spriteName);
-	//_animates
-}
+	_animates
+}*/
