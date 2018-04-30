@@ -25,7 +25,7 @@
     </actor>
     
     <actor id="campfire">
-      <behavior act_id="-1" tyep="campfire" template="large_campfire" name="campfire" team="neutral" />
+      <behavior act_id="-1" type="campfire" template="large_campfire" name="campfire" team="neutral" />
     </actor>
     
   </actors>

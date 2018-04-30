@@ -5,7 +5,7 @@
   <character id="guard" v_obj="Warior" class="warrior" health ="40" speed="10" damage="10" />
   <character id="warrior" v_obj="Warior" class="warrior" health ="30" speed="20" damage="15" />
   <!-- Campfires -->
-  <campfire id="large_campfire" v_boj="large_campfire" />
+  <campfire id="large_campfire" v_obj="large_campfire" />
   <!-- Containers -->
   <container id="large_chest" v_obj="large_wood_chest" />
 </Objects>
