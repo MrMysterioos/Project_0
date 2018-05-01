@@ -7,5 +7,5 @@
   <!-- Campfires -->
   <campfire id="large_campfire" v_boj="large_campfire" />
   <!-- Containers -->
-  <container id="large_chest" v_obj="large_wood_chest" />
+  <container id="large_wood_chest" v_obj="large_wood_chest" />
 </Objects>

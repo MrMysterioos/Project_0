@@ -1,43 +1,29 @@
 #include "ObjInfo.h"
 #include "tinyxml2\tinyxml2.h"
 
-ObjectInfo* ObjectInfo::create(tinyxml2::XMLDocument& doc, std::string id) {
-	ObjectInfo* ret = new (std::nothrow) ObjectInfo();
-	if (ret->init(doc, id)) {
-		ret->autorelease();
-		return ret;
-	}
-	CC_SAFE_DELETE(ret);
-	return nullptr;
-}
+ObjectInfo::ObjectInfo()
+	: _bInit(false)
+{}
 
-bool ObjectInfo::init(tinyxml2::XMLDocument& doc, std::string id) {
+bool ObjectInfo::initWithXmlElement(tinyxml2::XMLElement* node) {
 	typedef tinyxml2::XMLDocument XMLDoc;
 	typedef tinyxml2::XMLElement XMLNode;
 
-	XMLNode* eObjects = doc.FirstChildElement("Objects");
-	if (eObjects) {
-		XMLNode* eObject = eObjects->FirstChildElement();
-		while (eObject) {
-			std::string otherId = eObject->Attribute("id");
-			if (otherId == id) {
-				auto att = eObject->FirstAttribute();
-				while (att) {
-					std::string name = att->Name();
-					std::string value = att->Value();
-					_info.insert(std::pair<std::string, std::string>(name, value));
-					att = att->Next();
-				}
-				return true;
-			}
-			eObject = eObject->NextSiblingElement();
-		}
-	}
-	return false;
-}
+	if (!node)
+		return false;
 
-Behavior* Behavior::create() {
-	Behavior* ret = new (std::nothrow) Behavior();
-	ret->autorelease();
-	return ret;
+	std::string name = node->Name();
+	_typeName = name;
+
+	auto att = node->FirstAttribute();
+	while (att) {
+		std::string name = att->Name();
+		std::string value = att->Value();
+		_info.insert(std::pair<std::string, std::string>(name, value));
+		att = att->Next();
+	}
+
+	_bInit = true;
+
+	return true;
 }

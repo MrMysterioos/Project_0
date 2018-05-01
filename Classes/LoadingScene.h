@@ -5,7 +5,11 @@
 
 USING_NS_CC;
 using namespace ui;
+/**
+ * @brief Сцена, запускаемая перед игрой
 
+ * Описание ...
+ */
 class LoadingScene : public Scene {
 public:
 	static Scene* createScene(Scene* replaceScene);
