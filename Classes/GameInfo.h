@@ -74,7 +74,7 @@ public:
 
 	/**
 	 * @brief Получить информацию об уровне
-	 * @return Возврашает экземпляр LevelInfo
+	 * @return Экземпляр LevelInfo
 	 */
 	inline LevelInfo* getLevel() { return _level; }
 

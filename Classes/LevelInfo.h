@@ -102,7 +102,7 @@ public:
 
 	/**
 	 * @brief Получить карту ролей
-	 * @return Возвращает карту ролей
+	 * @return Карту ролей
 	 */
 	inline std::map<std::string, Role> getActorMap() { return _actors; }
 
@@ -114,7 +114,7 @@ public:
 
 	/**
 	 * @brief Получить набор различных концовок
-	 * @return Возвращает набор различных концовок
+	 * @return Набор различных концовок
 	 */
 	inline std::map<int, Reward> getRewards() { return _rewards; }
 
