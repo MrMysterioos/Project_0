@@ -1,5 +1,4 @@
 #include "LevelInfo.h"
-#include "ObjectManager.h"
 #include "tinyxml2\tinyxml2.h"
 
 USING_NS_CC;
