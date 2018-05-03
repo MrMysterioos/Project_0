@@ -1,5 +1,4 @@
 #include "GameInfo.h"
-#include "ObjectManager.h"
 #include "tinyxml2\tinyxml2.h"
 
 USING_NS_CC;
@@ -43,35 +42,32 @@ bool GameInfo::initWithFile(std::string source) {
 
 	XMLDoc doc;
 	doc.LoadFile(saveSource.c_str());
+	if (doc.Error())
+		return false;
 
 	XMLNode* eSave = doc.FirstChildElement("Save");
 	if (eSave) {
-		XMLNode* heroes = eSave->FirstChildElement("heroes");
-		if (heroes) {
-			XMLNode* eHero = heroes->FirstChildElement("hero");
+		XMLNode* eHeroes = eSave->FirstChildElement("heroes");
+		if (eHeroes) {
+			XMLNode* eHero = eHeroes->FirstChildElement("character");
 			while (eHero) {
 				// init heroes
-				std::string heroesSource = source + "/heroes.xml";
+				ObjectInfo tempHero;
+				tempHero.initWithXmlElement(eHero);
 
-				XMLDoc objDoc;
-				objDoc.LoadFile(heroesSource.c_str());
+				_heroes.push_back(tempHero);
 
-				if (objDoc.Error())
-					return false;
-
-				std::string tempId = eHero->Attribute("template");
-				ObjectInfo* tempHero = ObjectInfo::create(objDoc, tempId);
-
-				Behavior* tempBehav = Behavior::create();
-				tempBehav->baseObject = tempHero;
-				std::string heroName = eHero->Attribute("name");
-				tempBehav->name = heroName;
-
+<<<<<<< HEAD
 				_heroes.pushBack(tempBehav);
 
 				eHero = eHero->NextSiblingElement("hero");
+=======
+				eHero = eHero->NextSiblingElement("character");
+>>>>>>> master
 			}
 		}
+		else
+			return false;
 		XMLNode* artifacts = eSave->FirstChildElement("artifacts");
 		if (artifacts) {
 			XMLNode* artifact = artifacts->FirstChildElement("artifact");
@@ -82,6 +78,8 @@ bool GameInfo::initWithFile(std::string source) {
 				artifact = artifact->NextSiblingElement("artifact");
 			}
 		}
+		else
+			return false;
 		XMLNode* resources = eSave->FirstChildElement("resources");
 		if (resources) {
 			// init res
@@ -89,6 +87,8 @@ bool GameInfo::initWithFile(std::string source) {
 			_gold = atoi(resources->Attribute("gold"));
 			_provision = atoi(resources->Attribute("provision"));
 		}
+		else
+			return false;
 		XMLNode* level = eSave->FirstChildElement("level");
 		if (level) {
 			// init level
@@ -98,8 +98,12 @@ bool GameInfo::initWithFile(std::string source) {
 			_level->retain();
 			_curAct = atoi(level->Attribute("act_id"));
 		}
+		else
+			return false;
 
 	}
+	else
+		return false;
 
 	return true;
 }

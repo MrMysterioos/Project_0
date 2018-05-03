@@ -5,23 +5,31 @@
 
 USING_NS_CC;
 using namespace ui;
-
+/**
+ * @brief Сцена, запускаемая перед игрой
+ *
+ * Данная сцена запускатся перед основной игрой, во врепя пока она отображается происходит загрузка ресурсов.
+ */
 class LoadingScene : public Scene {
 public:
-	static Scene* createScene(Scene* replaceScene);
 
+	/**
+	 * @brief Метод для создания сцены
+	 *
+	 */
+	static LoadingScene* createScene();
+
+	/**
+	 * @brief Метод инициализации LoagingScene
+	 *
+	 */
 	virtual bool init() override;
 
 	virtual void update(float dt) override;
-
-	~LoadingScene();
 
 	CREATE_FUNC(LoadingScene);
 
 private:
 	LoadingBar* _loadingBar;
 
-	Scene* _replaceScene;
-
-	bool _done;
 };
