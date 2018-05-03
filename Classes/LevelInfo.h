@@ -98,7 +98,7 @@ public:
 	 * @brief Получить путь до файла, в котором хранится карта
 	 * @return Путь до файла с информацей о карте
 	 */
-	inline std::string getMapFile() { return _mapFile; }
+	inline std::string getMapSource() { return _source + "/map.tmx"; }
 
 	/**
 	 * @brief Получить карту ролей
@@ -119,8 +119,8 @@ public:
 	inline std::map<int, Reward> getRewards() { return _rewards; }
 
 private:
-	// файл, содержащий TMX карту
-	std::string _mapFile;
+	// путь до источника
+	std::string _source;
 	// ключи в этом контейнере соответствуют ключам объектов в TMX карте
 	std::map<std::string, Role> _actors;
 	// здесь хранятся квестовые состояния в виде модифицированного списка смежности

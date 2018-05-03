@@ -19,6 +19,8 @@ bool LevelInfo::initWithFile(std::string source) {
 	typedef tinyxml2::XMLDocument XMLDoc;
 	typedef tinyxml2::XMLElement XMLNode;
 
+	_source = source;
+
 	std::string levelSource = source + "/level.xml";
 
 	XMLDoc doc;
@@ -29,13 +31,6 @@ bool LevelInfo::initWithFile(std::string source) {
 
 	XMLNode* eLvl = doc.FirstChildElement("Level");
 	if (eLvl) {
-		// запоминаем название файла карты
-		XMLNode* eMap = eLvl->FirstChildElement("map");
-		if (eMap) {
-			_mapFile = eMap->Attribute("source");
-		}
-		else
-			return false;
 		// распределяем роли
 		XMLNode* eActors = eLvl->FirstChildElement("actors");
 		if (eActors) {
