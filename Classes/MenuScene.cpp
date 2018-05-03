@@ -75,8 +75,8 @@ void MenuScene::onEnter() {
 
 	auto om = ObjectManager::getInstance();
 	VisualObject* vobj = om->getVisualObject(v_obj);
-	Animation* anim = vobj->getAnimation("run");
-	Animate* animate = Animate::create(anim);
+	Map<std::string, Animation*> anim = vobj->getAnimation();
+	Animate* animate = Animate::create(anim.at("run"));
 
 	test->runAction(RepeatForever::create(animate));
 

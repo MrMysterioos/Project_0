@@ -96,8 +96,12 @@ SpriteFrame* VisualObject::getSpriteFrame() {
 	return _baseSpriteFrame;
 }
 
-Animation* VisualObject::getAnimation(std::string key) {
+/*Animation* VisualObject::getAnimation(std::string key) {
 	return _animations.at(key);
+}*/
+
+Map<std::string, Animation*> VisualObject::getAnimation() {
+	return _animations;
 }
 
 bool VisualObject::loadAnimation(std::string key, std::string source) {

@@ -4,9 +4,9 @@ USING_NS_CC;
 
 CampFire::CampFire() {}
 
-CampFire* CampFire::createWithName(std::string key) {
+CampFire* CampFire::createWithBehavior(Behavior* behavior) {
 	CampFire* _campfire = new (std::nothrow) CampFire();
-	if (_campfire && initWithName(key))
+	if (_campfire && initWithBehavior(behavior))
 	{
 		_campfire->autorelease();
 		return _campfire;
@@ -15,8 +15,7 @@ CampFire* CampFire::createWithName(std::string key) {
 	return nullptr;
 }
 
-bool CampFire::initWithName(std::string key) {
-	FireInfo _info = ObjectManager::getInstance()->getCampfireTemplate(key);
-	_sprite = Sprite::createWithSpriteFrameName(_info.spriteName);
-	_animates
+bool CampFire::initWithBehavior(Behavior* behavior) {
+	Actor::initWithBehavior(behavior);
+	
 }*/

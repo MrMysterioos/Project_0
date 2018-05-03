@@ -19,7 +19,8 @@ public:
 	void addAnimation(std::string key, Animation* anim);
 
 	SpriteFrame* getSpriteFrame();
-	Animation* getAnimation(std::string key);
+	//Animation* getAnimation(std::string key);
+	Map<std::string, Animation*> getAnimation();
 
 	~VisualObject() {
 		_baseSpriteFrame->release();

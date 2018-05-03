@@ -4,11 +4,11 @@
 
 class CampFire : public Actor {
 public:
-	CampFire* createWithName(std::string); // —оздание по имени
-	bool initWithName(std::string); //замена присваивани€ всего-всего в конструкторе (как  очкин советовал)
+	CampFire* createWithBehavior(Behavior* behavior); // —оздание по имени
 	void interaction();	//взаимодействие с другими объектами
 private:
 	//Sprite* _sprite;
 	CampFire();
 	CampFire* _campfire;
+	bool initWithBehavior(Behavior* behavior); //замена присваивани€ всего-всего в конструкторе (как  очкин советовал)
 };*/
