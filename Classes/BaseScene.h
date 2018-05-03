@@ -25,31 +25,53 @@ public:
 
 	CREATE_FUNC(BaseScene);
 private:
+	//функция задания вектора пути перемещения
+	//применяется волновой алгоритм
+	//применяются два аргумента а - начальная точка, b - конечная
+	bool setWayCoordinate(Vec2 a, Vec2 b);
+
+	//функция инициализации вектора представления карты
+	void initMapWay();
+
+	//конвертирует из тайл-координат в пиксельную координату
+	Vec2 convert(Vec2 vec);
+
+	//функция, которая определяет зашла ли точка from за to
+	//где velocity направление, в котором должна двигаться точка
+	//используется и для оси x и для оси y по-отдельности
+	bool isBelong(int velocity, float from, float to);
+private:
+
+	//константа, обозначающая препятствие на векторе пути перемещения
+	const int WALL = -1;
+	//константа, обозначающая возможность прохода на векторе пути перемещения
+	const int BLANK = -2;
 
 	TMXTiledMap * _map;
 
-	const int WALL = -1;
-	const int BLANK = -2;
-
-	//vectors with position tiles
-	int _inc;
-
+	//вектор из координат точек старта в тайл-координатах
 	std::vector<Vec2> _startPoints;
-
+	
+	//вектор пути перемещения в тайл-координатах
 	std::vector<Vec2> _way;
-
+	
+	//вектор представления карты в тайл-координатах виде
 	std::vector< std::vector<int> > _path;
 
-	Follow * camera;
 
-	Sprite * _actor; //test
-	Vec2 _posActorAt;
 
-	
-
+	/************************/
+	Sprite * _actor;
 	float _speed;
 
-	bool setWayCoordinate(Vec2 a, Vec2 b);
+	//позиция персонажа относительно карты в тайл-координатах
+	Vec2 _posActorAt;
 
-	Vec2 convertToCoordinate(Vec2 vec);
+	//переменная, которая перемещает нас по _way в update()
+	int _inc;	
+
+	Sprite * _cameraTarget;
+	Follow * _camera;
+	
+	/****************************/
 };
