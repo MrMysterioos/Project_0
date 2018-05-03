@@ -1,7 +1,6 @@
 #include "BaseScene.h"
 #include "GameInfo.h"
 #include "cocos2d.h"
-#include "ObjectManager.h"
 
 using namespace std;
 
@@ -19,7 +18,7 @@ bool BaseScene::init() {
 	//инициализация карты
 	auto gi = GameInfo::getInstance();
 	auto li = gi->getLevel();
-	_map = TMXTiledMap::create(("maps/" + li->getMapFile()).c_str());
+	_map = TMXTiledMap::create(("levels/level_001/map.tmx"));
 	_map->setScale(2);
 	this->addChild(_map);
 
@@ -54,7 +53,7 @@ bool BaseScene::init() {
 	}
 
 	//инициализация персонажа
-	_actor = Sprite::createWithSpriteFrameName("warior");
+	_actor = Sprite::create("textures/warior.png");//Sprite::createWithSpriteFrameName("warior");
 	_actor->setPosition(Vec2(convert(_startPoints[0])));
 	_actor->setScale(2);
 	_posActorAt = _startPoints[0];

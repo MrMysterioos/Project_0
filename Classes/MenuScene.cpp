@@ -1,12 +1,7 @@
 #include "MenuScene.h"
 #include "SimpleAudioEngine.h"
-<<<<<<< HEAD
-#include "GameInfo.h"
-#include "ObjectManager.h"
-#include "BaseScene.h"
-=======
 #include "AnimationSet.h"
->>>>>>> master
+#include "BaseScene.h"
 
 USING_NS_CC;
 
@@ -53,7 +48,7 @@ void MenuScene::onEnter() {
 	MenuItemLabel* playButton = MenuItemLabel::create(play);
 	playButton->setPosition(150, 300);
 	playButton->setCallback([&](cocos2d::Ref *sender) {
-		Director::getInstance()->replaceScene(BaseScene::createScene());
+		Director::getInstance()->replaceScene(BaseScene::create());
 	});
 	mainMenu->addChild(playButton);
 
@@ -69,26 +64,6 @@ void MenuScene::onEnter() {
 	test->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
 	test->setScale(4);
 
-<<<<<<< HEAD
-	// gameInfo test
-	auto gi = GameInfo::getInstance();
-	gi->initWithFile("saves/0");
-	LevelInfo* level = gi->getLevel();
-	auto actors = level->getActorMap();
-	auto role = actors.at("Sven");
-	auto behavior = role->getBehavior(-1);
-	std::string v_obj = behavior->baseObject->getAttribute("v_obj");
-
-	auto om = ObjectManager::getInstance();
-	VisualObject* vobj = om->getVisualObject(v_obj);
-	Animation* anim = vobj->getAnimation("run");
-	Animate* animate = Animate::create(anim);
-
-	test->runAction(RepeatForever::create(animate));
-
-
-=======
->>>>>>> master
 	this->addChild(test);
 
 	// AnimationSet

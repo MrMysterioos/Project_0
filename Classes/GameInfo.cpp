@@ -57,13 +57,7 @@ bool GameInfo::initWithFile(std::string source) {
 
 				_heroes.push_back(tempHero);
 
-<<<<<<< HEAD
-				_heroes.pushBack(tempBehav);
-
-				eHero = eHero->NextSiblingElement("hero");
-=======
 				eHero = eHero->NextSiblingElement("character");
->>>>>>> master
 			}
 		}
 		else
