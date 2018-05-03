@@ -63,6 +63,22 @@ void MenuScene::onEnter() {
 	test->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
 	test->setScale(4);
 
+	// gameInfo test
+	auto gi = GameInfo::getInstance();
+	gi->initWithFile("saves/0");
+	LevelInfo* level = gi->getLevel();
+	auto actors = level->getActorMap();
+	auto role = actors.at("Sven");
+	auto behavior = role->getBehavior(-1);
+	std::string v_obj = behavior->baseObject->getAttribute("v_obj");
+
+	auto om = ObjectManager::getInstance();
+	VisualObject* vobj = om->getVisualObject(v_obj);
+	Animation* anim = vobj->getAnimation("run");
+	Animate* animate = Animate::create(anim);
+
+	test->runAction(RepeatForever::create(animate));
+
 	this->addChild(test);
 
 	AnimationSet* animSet = AnimationSet::create("animations/large_wood_chest.xml");
