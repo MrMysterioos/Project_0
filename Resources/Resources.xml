@@ -1,9 +1,4 @@
 <?xml version="1.0"?>
 <Resources>
-	<Textures>
-    <sprite id="menuBackground" path="textures/background.png" />
-    <sprite id="warior" path="textures/Warior.png" />
-    <spriteSheet path="textures/idle_anim.plist" />
-    <animation id="warior_run" path="animations/warior_run.xml" />
-	</Textures>
+  <texture path="textures/background.png" />
 </Resources>

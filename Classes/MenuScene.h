@@ -3,6 +3,10 @@
 
 #include "cocos2d.h"
 
+/**
+ * @brief —цена главного меню
+ *
+ */
 class MenuScene : public cocos2d::Scene
 {
 public:

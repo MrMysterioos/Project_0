@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Save>
+  <!-- Heroes -->
   <heroes>
-    <hero template="warrior" name="Root" />
-    <hero template="villager" name="Toor" />
+    <character id="villager" name="Root" v_obj="Warior" class="warrior" health ="10" speed="10" damage="5" />
+    <character id="guard" name="Toor" v_obj="Warior" class="warrior" health ="40" speed="10" damage="10" />
   </heroes>
+  <!-- Artifacts -->
   <artifacts>
     <artifact id="elder_scroll" />
   </artifacts>
+  <!-- Resources -->
   <resources total_time="72" gold="10" provision="15" />
+  <!-- Level -->
   <level source="levels/level_001" act_id="0" />
 </Save>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Animations>
+  <animation key="idle" source="textures/large_wood_chest.png" width="64" height="64" duration="0.1" reverce="false" />
+  <animation key="open" source="textures/large_wood_chest_open.png" width="64" height="64" duration="0.1" reverce="false" />
+  <animation key="close" source="textures/large_wood_chest_open.png" width="64" height="64" duration="0.1" reverce="true" />
+</Animations>

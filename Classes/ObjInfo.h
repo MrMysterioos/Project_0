@@ -4,28 +4,51 @@
 #include "tinyxml2\tinyxml2.h"
 
 USING_NS_CC;
-enum Team { FRIEND, ENEMY, NEUTRAL };
-// один класс для создания всех объектов
-class ObjectInfo : public Ref {
-public:
-	static ObjectInfo* create(tinyxml2::XMLDocument& doc, std::string id);
-	bool init(tinyxml2::XMLDocument& doc, std::string id);
 
+/**
+ * @brief Класс для хранения различной информации об игровых сущностях
+ *
+ * Класс ObjectInfo представляет собой таблицу значений, которая может хранить в себе
+ * информацию об игровых объектах, задачах и других подобных сущностях.
+ * ObjectInfo часто используется в качестве аргумента при создании объектов.
+ */
+class ObjectInfo {
+public:
+
+	/**
+	 * @brief Конструктор для ObjectInfo
+	 *
+	 */
+	ObjectInfo();
+
+	/**
+	 * @brief Метод, инициализирующий ObjectInfo из XML элемента
+	 * @param [in] node Указатель на элемент документа
+	 */
+	bool initWithXmlElement(tinyxml2::XMLElement* node);
+
+	/**
+	 * @brief Получить тег типа
+	 *
+	 */
+	inline std::string getTypeName() { return _typeName; }
+
+	/**
+	 * @brief Получить атрибут по его ключу
+	 *
+	 */
 	inline std::string getAttribute(std::string key) { return _info.at(key); }
 
+	/**
+	 * @brief Метод, проверяющий, был ли инициализирован объект
+	 * @return true - если объект иницализирован
+	 */
+	inline bool isInit() { return _bInit; }
+
 private:
-	
+	std::string _typeName;
 	std::map<std::string, std::string> _info;
+	bool _bInit;
 
-};
-// пользовательский адаптер для IbjectInfo с расширенными параметрами
-class Behavior : public Ref {
-public:
-	static Behavior* create();
-
-public:
-	ObjectInfo* baseObject; // иоформация об объекте
-	std::string name; // отображаемое имя
-	Team team; // команда (друг, враг или нейтральный)
 };
 

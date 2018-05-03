@@ -1,7 +1,6 @@
 #include "MenuScene.h"
 #include "SimpleAudioEngine.h"
-#include "GameInfo.h"
-#include "ObjectManager.h"
+#include "AnimationSet.h"
 
 USING_NS_CC;
 
@@ -30,7 +29,7 @@ void MenuScene::onEnter() {
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
 	// add background
-	auto sprite = Sprite::createWithSpriteFrameName("menuBackground");
+	auto sprite = Sprite::create("textures/background.png");
 	sprite->setAnchorPoint(Vec2(0, 0.5));
 	sprite->setPosition(Vec2(0, visibleSize.height / 2));
 	sprite->setScale(visibleSize.width / sprite->getContentSize().width);
@@ -60,10 +59,11 @@ void MenuScene::onEnter() {
 	mainMenu->addChild(exitButton);
 
 	// alising test
-	Sprite* test = Sprite::createWithSpriteFrameName("warior");
+	Sprite* test = Sprite::create("textures/large_wood_chest.png");
 	test->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
 	test->setScale(4);
 
+<<<<<<< HEAD
 	// gameInfo test
 	auto gi = GameInfo::getInstance();
 	gi->initWithFile("saves/0");
@@ -80,7 +80,19 @@ void MenuScene::onEnter() {
 
 	test->runAction(RepeatForever::create(animate));
 
+=======
+>>>>>>> master
 	this->addChild(test);
+
+	// AnimationSet
+	AnimationSet* animSet = AnimationSet::create("animations/large_wood_chest.xml");
+	auto anim1 = animSet->getAnimation("open");
+	auto anim2 = animSet->getAnimation("close");
+	auto act1 = Animate::create(anim1);
+	auto act2 = Animate::create(anim2);
+	auto seq = Sequence::create(act1, act2, nullptr);
+	auto rep = RepeatForever::create(seq);
+	auto action = test->runAction(rep);
 }
 
 void MenuScene::menuCloseCallback(Ref* pSender)

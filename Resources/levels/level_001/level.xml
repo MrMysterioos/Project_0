@@ -1,31 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Level>
   
-  <map source="map_001.tmx" />
-  
   <actors>
     
-    <actor id="Sven">
-      <behavior act_id="-1" type="character" template="villager" name="Sven" team="neutral" />
-      <behavior act_id="2" type="character" template="villager" name="Sven" team="friend" />
+    <actor id="Sven" template="villager">
+      <behavior act_id="-1" name="Sven" team="neutral" />
+      <behavior act_id="2" name="Sven" team="friend" />
     </actor>
     
-    <actor id="Copa">
-      <behavior act_id="-1" type="character" template="warior" name="Copa" team="neutral" />
-      <behavior act_id="1" type="character" template="warior" name="Copa" team="enemy" />
+    <actor id="Copa" template="warrior">
+      <behavior act_id="-1" name="Copa" team="neutral" />
+      <behavior act_id="1" name="Copa" team="enemy" />
     </actor>
     
-    <actor id="Roka">
-      <behavior act_id="-1" type="character" template="warior" name="Roka" team="neutral" />
-      <behavior act_id="1" type="character" template="warior" name="Roka" team="enemy" />
+    <actor id="Roka" template="warrior">
+      <behavior act_id="-1" name="Roka" team="neutral" />
+      <behavior act_id="1" name="Roka" team="enemy" />
     </actor>
     
-    <actor id="chest">
-      <behavior act_id="-1" type="container" template="large_wood_chest" name="mystery chest" team="neutral" />
+    <actor id="chest" template="large_wood_chest">
+      <behavior act_id="-1" name="mystery chest" team="neutral" />
     </actor>
     
+<<<<<<< HEAD
     <actor id="campfire">
       <behavior act_id="-1" type="campfire" template="large_campfire" name="campfire" team="neutral" />
+=======
+    <actor id="campfire" template="large_campfire">
+      <behavior act_id="-1" name="campfire" team="neutral" />
+>>>>>>> master
     </actor>
     
   </actors>

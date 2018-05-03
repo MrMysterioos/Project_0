@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Objects>
-  <!-- Heroes -->
-  <character id="villager" v_obj="Warior" class="warrior" health ="10" speed="10" damage="5" />
-  <character id="guard" v_obj="Warior" class="warrior" health ="40" speed="10" damage="10" />
-  <character id="warrior" v_obj="Warior" class="warrior" health ="30" speed="20" damage="15" />
-</Objects>
