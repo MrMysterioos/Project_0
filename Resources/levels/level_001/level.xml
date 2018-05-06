@@ -21,14 +21,9 @@
     <actor id="chest" template="large_wood_chest">
       <behavior act_id="-1" name="mystery chest" team="neutral" />
     </actor>
-    
-<<<<<<< HEAD
-    <actor id="campfire">
-      <behavior act_id="-1" type="campfire" template="large_campfire" name="campfire" team="neutral" />
-=======
+   
     <actor id="campfire" template="large_campfire">
       <behavior act_id="-1" name="campfire" team="neutral" />
->>>>>>> master
     </actor>
     
   </actors>

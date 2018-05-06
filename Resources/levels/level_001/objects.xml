@@ -5,11 +5,7 @@
   <character id="guard" animation_set="animations/warrior.xml" class="warrior" health ="40" speed="10" damage="10" />
   <character id="warrior" animation_set="animations/warrior.xml" class="warrior" health ="30" speed="20" damage="15" />
   <!-- Campfires -->
-<<<<<<< HEAD
-  <campfire id="large_campfire" v_obj="large_campfire" />
-=======
   <campfire id="large_campfire" animation_set="animations/large_campfire.xml" />
->>>>>>> master
   <!-- Containers -->
   <container id="large_wood_chest" animation_set="animation/large_wood_chest.xml" />
 </Objects>

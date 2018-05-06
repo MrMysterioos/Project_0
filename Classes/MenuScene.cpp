@@ -59,29 +59,15 @@ void MenuScene::onEnter() {
 	mainMenu->addChild(exitButton);
 
 	// alising test
-	Sprite* test = Sprite::create("textures/large_wood_chest.png");
+	/*Sprite* test = Sprite::create("textures/large_wood_chest.png");
+	test->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
+	test->setScale(4);*/
+
+	Sprite* test = Sprite::create();
+	test->setContentSize(Size(64, 64));
 	test->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
 	test->setScale(4);
 
-<<<<<<< HEAD
-	// gameInfo test
-	auto gi = GameInfo::getInstance();
-	gi->initWithFile("saves/0");
-	LevelInfo* level = gi->getLevel();
-	auto actors = level->getActorMap();
-	auto role = actors.at("Sven");
-	auto behavior = role->getBehavior(-1);
-	std::string v_obj = behavior->baseObject->getAttribute("v_obj");
-
-	auto om = ObjectManager::getInstance();
-	VisualObject* vobj = om->getVisualObject(v_obj);
-	Map<std::string, Animation*> anim = vobj->getAnimation();
-	Animate* animate = Animate::create(anim.at("run"));
-
-	test->runAction(RepeatForever::create(animate));
-
-=======
->>>>>>> master
 	this->addChild(test);
 
 	// AnimationSet
