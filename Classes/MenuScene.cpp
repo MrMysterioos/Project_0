@@ -1,6 +1,7 @@
 #include "MenuScene.h"
 #include "SimpleAudioEngine.h"
 #include "AnimationSet.h"
+#include "LevelInfo.h"
 
 USING_NS_CC;
 
@@ -70,8 +71,14 @@ void MenuScene::onEnter() {
 
 	this->addChild(test);
 
+	LevelInfo* li = LevelInfo::create("levels/level_001");
+	std::map<std::string, Role> actors = li->LevelInfo::getActorMap();
+	Role actorRole = actors.at("chest");
+	Behavior Actor = actorRole.getBehavior(-1);
+	auto chestSource = actorRole.objInf.getAttribute("animation_set");
+
 	// AnimationSet
-	AnimationSet* animSet = AnimationSet::create("animations/large_wood_chest.xml");
+	AnimationSet* animSet = AnimationSet::create(chestSource);
 	auto anim1 = animSet->getAnimation("open");
 	auto anim2 = animSet->getAnimation("close");
 	auto act1 = Animate::create(anim1);
