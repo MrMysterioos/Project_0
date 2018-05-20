@@ -3,12 +3,12 @@
 
 USING_NS_CC;
 
-class Character : protected Actor {
+class Character : public Actor {
 protected:
-	int _heathlPoints;
+	int _healthPoints;
 	float _speed;
-	int _attactPower;
+	int _attackPower;
 
-	virtual bool initWithBehavior(Behavior* behavior);
-public:
+	virtual bool init();
+
 };

@@ -1,11 +1,21 @@
 #include "cocos2d.h"
-#include "ObjectManager.h"
+#include "LevelInfo.h"
+#include "AnimationSet.h"
 
 class Actor: public Node {
 protected:
-	Sprite* _sprite; //спрайт будет у всех наследников класса
-	Map<std::string, Animation*> _animationsMap; //map анимаций
-	virtual void interaction() = 0;	//абстрактная функция взаимодействия
+	Sprite* _sprite;
 
-	bool initWithBehavior(Behavior*);	//эта функция будет одинаковой у всех наследников
+	ObjectInfo _objInfo;
+
+	AnimationSet *_animationSet;
+
+	short int tileSize = 64;
+
+	virtual bool init();
+
+public:
+	inline void setPositionInTile(Vec2);
+
+	inline Vec2 getPositionInTile();
 };

@@ -1,7 +1,7 @@
 #include "Character.h"
 
-bool Character::initWithBehavior(Behavior * behavior) {
-	Actor::initWithBehavior(behavior);
+bool Character::init() {
+	
 
 	return true;
 }
