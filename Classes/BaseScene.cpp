@@ -1,5 +1,6 @@
 #include "BaseScene.h"
 #include "GameInfo.h"
+#include "DialogScene.h"
 #include "cocos2d.h"
 
 using namespace std;
@@ -10,6 +11,10 @@ Scene* BaseScene::createScene() {
 
 bool BaseScene::init() {
 
+	//TODO инициализировать из файла сохранения
+	//Если он отсутствует или игра только начата, то приравнять к нулю
+	_actID = 0;
+
 	GameScene::init();
 
 	if (!Scene::init())
@@ -17,8 +22,11 @@ bool BaseScene::init() {
 
 	//инициализация карты
 	auto gi = GameInfo::getInstance();
+	gi->initWithFile("saves/0");
 	auto li = gi->getLevel();
-	_map = TMXTiledMap::create(("levels/level_001/map.tmx"));
+	auto quest = li->getQuest();
+	auto reward = li->getRewards();
+	_map = TMXTiledMap::create(li->getMapSource().c_str());
 	_map->setScale(2);
 	this->addChild(_map);
 
@@ -59,7 +67,6 @@ bool BaseScene::init() {
 	_posActorAt = _startPoints[0];
 	this->addChild(_actor);
 
-	//log("%f %f", dir->getPosition().x, dir->getPosition().y);
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	auto camera = this->getDefaultCamera();
@@ -85,14 +92,125 @@ bool BaseScene::init() {
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(mouseListener, this);
 
 	//другое
-	_speed = 200;
+	_speed = 1000;
+
+	_labelTask = Label::createWithTTF("", "fonts/Pixel.ttf", 35);
+	_labelTask->setPosition(camera->getPosition() - Vec2(350, -200));
+	_labelTask->setColor(Color3B::RED);
+	_labelTask->setOpacity(0);
+	this->addChild(_labelTask);
+
+	_initActScene(_actID);
+
+
+	auto _listener = EventListenerCustom::create("game_custom_event1", [=](EventCustom* event) {
+		std::string str("Custom event 1 received, ");
+		char* buf = static_cast<char*>(event->getUserData());
+		str += buf;
+		str += " times";
+		auto x = event->getEventName();
+	});
+
+	_eventDispatcher->addEventListenerWithFixedPriority(_listener, 1);
 
 	return true;
+}
+
+void BaseScene::_initActScene(int id) {
+
+	auto quest = GameInfo::getInstance()->getLevel()->getQuest();
+
+	//id акта не может быть больше количества актов
+	if (id >= quest.size())
+		return;
+
+	auto transition = quest.find(id)->second.trans.begin();
+	auto tasks = transition->tasks;
+
+	std::string typeAct = transition->tasks.begin()->getTypeName();
+	if (typeAct == "talk") {
+		_task = "Talk to ";
+	}
+	else if (typeAct == "defeat") {
+		_task = "Defeat to ";
+	}
+
+	int count = 1;
+	for (auto it = tasks.begin(); it != tasks.end(); ++it) {
+
+		std::string target = it->getAttribute("target");
+
+		//TODO поработать над алгоритмами, чтобы выводило задание красиво
+		if (_task.size() > 10 * count) {
+			_task += "\n";
+			count++;
+		}
+
+		if (it == tasks.begin()) {
+			_task += target;
+			continue;
+		}
+		else if (it != tasks.end() - 1) {
+			std::string str = ", " + target;
+			_task += str;
+		}
+		else {
+			std::string str = " and " + target;
+			_task += str;
+		}
+	}
+	_labelTask->setString(_task.c_str());
+
+
+	auto _targetName = tasks.begin()->getAttribute("target");
+	auto objectGroup =_map->getObjectGroup("Actors");
+	auto obj = objectGroup->getObject(_targetName);
+
+	auto del = _map->getTileSize();
+
+	_posTarget = Vec2((obj.at("x").asFloat()) / del.width, _map->getMapSize().height - (obj.at("y").asFloat()) / del.width-2);
+	auto dskl = _posActorAt;
+}
+
+void BaseScene::_initActByResult(int id, int result) {
+	auto quest = GameInfo::getInstance()->getLevel()->getQuest();
+
+	//id акта не может быть больше количества актов
+	if (id >= quest.size())
+		return;
+
+	auto transition = quest.find(id)->second.trans;
+	//auto tasks = transition->tasks;
+
+	for (auto it : transition) {
+
+		for (auto jt : it.tasks) {
+			auto res = jt.getAttribute("result");
+			if (result == atoi(res.c_str()) && !it.final) {
+				_actID++;
+				_initActScene(_actID);
+				break;
+			}
+			else if (result == atoi(res.c_str()) && it.final) {
+				//TODO получение награды
+			}
+		}
+	}
+
+
+}
+
+void BaseScene::_initActByResult(int id, bool result) {
+
 }
 
 
 
 void BaseScene::update(float dt) {
+
+	if (_posActorAt == _posTarget) {
+		_initActByResult(0, 1);	
+	}
 
 	if (!_way.empty() && _inc < _way.size()) {							//персонажи не должны перемещаться, если нет пути
 
@@ -122,15 +240,20 @@ void BaseScene::update(float dt) {
 		if (_actor->getPosition().x < visibleSize.width / 2.f) {
 			camera->setPositionX(visibleSize.width / 2.f);
 		}
-		else if (_actor->getPositionX() > _map->getMapSize().width * _map->getTileSize().width * _map->getScale() 
-			- (visibleSize.width / 2.f + 3 * _map->getTileSize().width * _map->getScale()))
-			camera->setPositionX(_map->getMapSize().width * _map->getTileSize().width * _map->getScale() - (visibleSize.width / 2.f + 3 * _map->getTileSize().width * _map->getScale()));
+		else if (_actor->getPositionX() > _map->getMapSize().width * _map->getTileSize().width * _map->getScale()
+			- (visibleSize.width / 2.f + 3 * _map->getTileSize().width * _map->getScale())) 
+		{
+			camera->setPositionX(_map->getMapSize().width * _map->getTileSize().width * _map->getScale() 
+				- (visibleSize.width / 2.f + 3 * _map->getTileSize().width * _map->getScale()));
+		}
 		/*else if (_actor->getPositionX() < _map->getMapSize().width * _map->getTileSize().width * _map->getScale()
 			- (visibleSize.width / 2.f + 3 * _map->getTileSize().width * _map->getScale()))
 			camera->setPositionX(_map->getMapSize().width * _map->getTileSize().width * _map->getScale() - (visibleSize.width / 2.f + 3 * _map->getTileSize().width * _map->getScale()));
 			*/
-		else
+		else {
 			camera->setPositionX(_actor->getPositionX());
+		}
+		_labelTask->setPositionX(camera->getPositionX() - 350);
 
 
 		//Y координата смещения камеры
@@ -139,8 +262,10 @@ void BaseScene::update(float dt) {
 		else if(_actor->getPositionY() > _map->getMapSize().height * _map->getTileSize().height * _map->getScale() - visibleSize.height / 2.f) {
 			camera->setPositionY(_map->getMapSize().height * _map->getTileSize().height * _map->getScale() - visibleSize.height / 2.f);
 		}
-		else
+		else {
 			camera->setPositionY(_actor->getPositionY());
+		}
+		_labelTask->setPositionY(camera->getPositionY() + 200);
 
 
 		/*if (_actor->getPosition().x - this->getDefaultCamera()->getPosition().x > 0) {
@@ -193,10 +318,15 @@ void BaseScene::onMouseDown(Event * event) {
 
 void BaseScene::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event) {
 	GameScene::onKeyReleased(keyCode, event);
+	if (keyCode == EventKeyboard::KeyCode::KEY_TAB) {
+		_labelTask->setOpacity(0);
+	}
 }
 
 void BaseScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event * event) {
-
+	if (keyCode == EventKeyboard::KeyCode::KEY_TAB) {
+		_labelTask->setOpacity(1000);
+	}
 }
 
 

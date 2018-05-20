@@ -2,10 +2,12 @@
 
 #include "GameScene.h"
 #include "cocos2d.h"
+#include "ui/CocosGUI.h"
 #include <string>
 #include <vector>
 
 using namespace cocos2d;
+using namespace cocos2d::ui;
 
 class BaseScene : public GameScene {
 public:
@@ -40,7 +42,28 @@ private:
 	//где velocity направление, в котором должна двигаться точка
 	//используется и для оси x и для оси y по-отдельности
 	bool isBelong(int velocity, float from, float to);
+
+	//инициализирует данные о задании относительно заданного акта
+	void _initActScene(int id);
+
+	void _initActByResult(int id, int result);
+	void _initActByResult(int id, bool result);
 private:
+
+	//это лейбл, который выводит задание
+	Label * _labelTask;
+
+	//строка, которая содержит задание
+	std::string _task;
+
+	//имя одной из цели, к которой нужно перемещаться
+	std::string _targetName;
+
+	//позиция, к которой нужно передвигаться, чтобы выполнить задание
+	Vec2 _posTarget;
+	
+	//номер акта в игре
+	int _actID;
 
 	//константа, обозначающая препятствие на векторе пути перемещения
 	const int WALL = -1;
@@ -57,8 +80,6 @@ private:
 	
 	//вектор представления карты в тайл-координатах виде
 	std::vector< std::vector<int> > _path;
-
-
 
 	/************************/
 	Sprite * _actor;

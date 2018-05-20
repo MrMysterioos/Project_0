@@ -37,7 +37,9 @@ void GameScene::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event) {
 	if (keyCode == EventKeyboard::KeyCode::KEY_ESCAPE) {
 		if (this->getChildByName("pause") == nullptr) {
 			auto layer = PauseMenu::createLayer();
+			auto positionCamera = this->getDefaultCamera()->getPosition();
 			layer->setName("pause");
+			layer->setPosition(positionCamera - Director::getInstance()->getVisibleSize() / 2.f);
 			this->addChild(layer);
 		}
 		else {
