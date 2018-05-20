@@ -17,12 +17,14 @@ bool BaseScene::init() {
 
 	GameScene::init();
 
-	if (!Scene::init())
+	if (!Scene::init()) {
 		return false;
+	}
 
-	//инициализация карты
 	auto gi = GameInfo::getInstance();
 	gi->initWithFile("saves/0");
+
+	//инициализация карты
 	auto li = gi->getLevel();
 	auto quest = li->getQuest();
 	auto reward = li->getRewards();
@@ -34,13 +36,14 @@ bool BaseScene::init() {
 	auto layerStartPoint = _map->getLayer("StartPoints");
 	auto mapSize = _map->getMapSize();
 	if (layerStartPoint != nullptr) {
-		for (int i = 0; i < mapSize.height; i++)
-			for (int j = 0; j < mapSize.width; j++) {
+		for (unsigned i = 0; i < mapSize.height; ++i) {
+			for (unsigned j = 0; j < mapSize.width; ++j) {
 				auto spriteTile = layerStartPoint->getTileAt(Vec2(j, i));
 				if (spriteTile != nullptr) {
 					_startPoints.push_back(Vec2(j, i));
 				}
 			}
+		}
 	}
 
 	//инициализация пути перемещения
@@ -54,46 +57,25 @@ bool BaseScene::init() {
 				if (spriteTile != nullptr) {
 					_path[i].push_back(BLANK);
 				}
-				else
+				else {
 					_path[i].push_back(WALL);
+				}
 			}
 		}
 	}
 
-	//инициализация персонажа
-	_actor = Sprite::create("textures/warior.png");//Sprite::createWithSpriteFrameName("warior");
-	_actor->setPosition(Vec2(convert(_startPoints[0])));
-	_actor->setScale(2);
-	_posActorAt = _startPoints[0];
-	this->addChild(_actor);
-
+	d_initActor();
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	auto camera = this->getDefaultCamera();
 	camera->setPosition(Vec2(visibleSize.width / 2.f, visibleSize.height / 2.f));
-
-	/*Point origin = Director::getInstance()->getVisibleOrigin();
-	Size wsize = Director::getInstance()->getVisibleSize();  //default screen size (or design resolution size, if you are using design resolution)
-	Point *center = new Point(wsize.width / 2 + origin.x, wsize.height / 2 + origin.y);
-
-	_cameraTarget = Sprite::create();
-	_cameraTarget->setPositionX(_actor->getPosition().x); // set to players x
-	_cameraTarget->setPositionY(wsize.height / 2 + origin.y); // center of height
-
-	_camera = Follow::create(_cameraTarget, Rect::ZERO);
-
-	this->runAction(_camera);*/
-
-	//log("%f %f", _actor->getPosition().x, _actor->getPosition().y);
 
 	//инициализация слушателя
 	auto mouseListener = EventListenerMouse::create();
 	mouseListener->onMouseDown = CC_CALLBACK_1(BaseScene::onMouseDown, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(mouseListener, this);
 
-	//другое
-	_speed = 1000;
-
+	//инициализация лейбла, показывающее текущее задание
 	_labelTask = Label::createWithTTF("", "fonts/Pixel.ttf", 35);
 	_labelTask->setPosition(camera->getPosition() - Vec2(350, -200));
 	_labelTask->setColor(Color3B::RED);
@@ -102,16 +84,15 @@ bool BaseScene::init() {
 
 	_initActScene(_actID);
 
-
-	auto _listener = EventListenerCustom::create("game_custom_event1", [=](EventCustom* event) {
-		std::string str("Custom event 1 received, ");
+	//НАРАБОТКИ
+	auto listener = EventListenerCustom::create("game_custom_event1", [=](EventCustom* event) {
+		/*std::string str("Custom event 1 received, ");
 		char* buf = static_cast<char*>(event->getUserData());
 		str += buf;
 		str += " times";
-		auto x = event->getEventName();
+		auto x = event->getEventName();*/
 	});
-
-	_eventDispatcher->addEventListenerWithFixedPriority(_listener, 1);
+	_eventDispatcher->addEventListenerWithFixedPriority(listener, 1);
 
 	return true;
 }
@@ -121,8 +102,9 @@ void BaseScene::_initActScene(int id) {
 	auto quest = GameInfo::getInstance()->getLevel()->getQuest();
 
 	//id акта не может быть больше количества актов
-	if (id >= quest.size())
+	if (id >= quest.size()) {
 		return;
+	}
 
 	auto transition = quest.find(id)->second.trans.begin();
 	auto tasks = transition->tasks;
@@ -141,7 +123,7 @@ void BaseScene::_initActScene(int id) {
 		std::string target = it->getAttribute("target");
 
 		//TODO поработать над алгоритмами, чтобы выводило задание красиво
-		if (_task.size() > 10 * count) {
+		if (_task.size() > unsigned(10 * count)) {
 			_task += "\n";
 			count++;
 		}
@@ -161,7 +143,6 @@ void BaseScene::_initActScene(int id) {
 	}
 	_labelTask->setString(_task.c_str());
 
-
 	auto _targetName = tasks.begin()->getAttribute("target");
 	auto objectGroup =_map->getObjectGroup("Actors");
 	auto obj = objectGroup->getObject(_targetName);
@@ -176,8 +157,9 @@ void BaseScene::_initActByResult(int id, int result) {
 	auto quest = GameInfo::getInstance()->getLevel()->getQuest();
 
 	//id акта не может быть больше количества актов
-	if (id >= quest.size())
+	if (id >= quest.size()) {
 		return;
+		}
 
 	auto transition = quest.find(id)->second.trans;
 	//auto tasks = transition->tasks;
@@ -196,124 +178,18 @@ void BaseScene::_initActByResult(int id, int result) {
 			}
 		}
 	}
-
-
 }
 
 void BaseScene::_initActByResult(int id, bool result) {
 
 }
 
-
-
 void BaseScene::update(float dt) {
-
-	if (_posActorAt == _posTarget) {
-		_initActByResult(0, 1);	
-	}
-
-	if (!_way.empty() && _inc < _way.size()) {							//персонажи не должны перемещаться, если нет пути
-
-		if (_posActorAt == _way[_way.size() - 1]) {            
-			this->unschedule(schedule_selector(BaseScene::update));		//если персонажи прибыли в место назначения - можно больше не двигаться
-			return;
-		}
-
-		Vec2 velocity = Vec2(_way[_inc].x - _posActorAt.x, 
-			-(_way[_inc].y - _posActorAt.y));
-
-		if (velocity.x == 0 && velocity.y == 0) {
-			_inc++;
-			return;
-		}		
-
-		_actor->setRotationSkewY( (1 - velocity.x) * 90 );
-
-		_actor->setPosition(Vec2( _actor->getPosition().x + velocity.x * dt * _speed , 
-			_actor->getPosition().y + velocity.y * dt * _speed ));
-
-		auto visibleSize = Director::getInstance()->getVisibleSize();
-		auto camera = this->getDefaultCamera();
-
-
-		//X координата смещения камеры
-		if (_actor->getPosition().x < visibleSize.width / 2.f) {
-			camera->setPositionX(visibleSize.width / 2.f);
-		}
-		else if (_actor->getPositionX() > _map->getMapSize().width * _map->getTileSize().width * _map->getScale()
-			- (visibleSize.width / 2.f + 3 * _map->getTileSize().width * _map->getScale())) 
-		{
-			camera->setPositionX(_map->getMapSize().width * _map->getTileSize().width * _map->getScale() 
-				- (visibleSize.width / 2.f + 3 * _map->getTileSize().width * _map->getScale()));
-		}
-		/*else if (_actor->getPositionX() < _map->getMapSize().width * _map->getTileSize().width * _map->getScale()
-			- (visibleSize.width / 2.f + 3 * _map->getTileSize().width * _map->getScale()))
-			camera->setPositionX(_map->getMapSize().width * _map->getTileSize().width * _map->getScale() - (visibleSize.width / 2.f + 3 * _map->getTileSize().width * _map->getScale()));
-			*/
-		else {
-			camera->setPositionX(_actor->getPositionX());
-		}
-		_labelTask->setPositionX(camera->getPositionX() - 350);
-
-
-		//Y координата смещения камеры
-		if (_actor->getPositionY() < visibleSize.height / 2.f)
-			camera->setPositionY(visibleSize.height / 2.f);
-		else if(_actor->getPositionY() > _map->getMapSize().height * _map->getTileSize().height * _map->getScale() - visibleSize.height / 2.f) {
-			camera->setPositionY(_map->getMapSize().height * _map->getTileSize().height * _map->getScale() - visibleSize.height / 2.f);
-		}
-		else {
-			camera->setPositionY(_actor->getPositionY());
-		}
-		_labelTask->setPositionY(camera->getPositionY() + 200);
-
-
-		/*if (_actor->getPosition().x - this->getDefaultCamera()->getPosition().x > 0) {
-			this->getDefaultCamera()->setPosition(velocity.x * _map->getTileSize().width * _map->getScale() * dt + this->getDefaultCamera()->getPosition().x,
-				velocity.y * _map->getTileSize().height * _map->getScale() * dt + this->getDefaultCamera()->getPosition().y);
-		}*/
-
-		if( isBelong(velocity.x, _actor->getPosition().x, convert(_way[_inc]).x)
-			&& isBelong(velocity.y, _actor->getPosition().y, convert(_way[_inc]).y) ) 
-		{
-			_posActorAt = _way[_inc];
-			_actor->setPosition(Vec2(convert(_posActorAt).x, convert(_posActorAt).y));
-			_inc++;
-		}
-	}
+	d_update(dt);
 }
 
-
-
 void BaseScene::onMouseDown(Event * event) {
-	EventMouse* e = (EventMouse*)event;
-
-
-	log("mouse pos %f %f", e->getCursorX(), e->getCursorY());
-	/*log("camera pos %f %f", this->getDefaultCamera()->getPosition().x, this->getDefaultCamera()->getPosition().y);
-	log("actor pos %f %f", _actor->getPosition().x, _actor->getPosition().y);
-	log("size window %f %f", Director::getInstance()->getVisibleSize().width/2, Director::getInstance()->getVisibleSize().height/2);*/
-
-	float x = this->getDefaultCamera()->getPosition().x - Director::getInstance()->getVisibleSize().width / 2.f;
-	float y = (this->getDefaultCamera()->getPosition().y - Director::getInstance()->getVisibleSize().height / 2.f);
-
-	int tileX = int(((e->getCursorX() + x) / (_map->getTileSize().width * _map->getScale())));
-	int tileY = int(_map->getMapSize().height - (e->getCursorY() + y) / (_map->getTileSize().height * _map->getScale()));
-
-	for (int i = tileY; i < _map->getMapSize().height; i++) {
-		if (_path[i][tileX] == BLANK) {
-			tileY = i;
-			break;
-		}
-	}
-
-	/*Vec2 toMove = Vec2( int(((e->getCursorX() + x) / (_map->getTileSize().width * _map->getScale()))), 
-		int(_map->getMapSize().height - (e->getCursorY() + y) / (_map->getTileSize().height * _map->getScale())));*/
-
-	Vec2 toMove = Vec2(tileX, tileY);
-	
-	if(setWayCoordinate(_posActorAt, toMove))
-		this->schedule(schedule_selector(BaseScene::update));
+	d_onMouseDown(event);
 }
 
 void BaseScene::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event) {
@@ -329,9 +205,121 @@ void BaseScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event * event) {
 	}
 }
 
+////ВСПОМОГАТЕЛЬНЫЙ КОД
+
+void BaseScene::d_onMouseDown(Event * event) {
+	EventMouse* e = (EventMouse*)event;
+
+	float x = this->getDefaultCamera()->getPosition().x - Director::getInstance()->getVisibleSize().width / 2.f;
+	float y = (this->getDefaultCamera()->getPosition().y - Director::getInstance()->getVisibleSize().height / 2.f);
+
+	int tileX = int(((e->getCursorX() + x) / (_map->getTileSize().width * _map->getScale())));
+	int tileY = int(_map->getMapSize().height - (e->getCursorY() + y) / (_map->getTileSize().height * _map->getScale()));
+
+	for (int i = tileY; i < _map->getMapSize().height; i++) {
+		if (_path[i][tileX] == BLANK) {
+			tileY = i;
+			break;
+		}
+	}
+
+	Vec2 toMove = Vec2(tileX, tileY);
+
+	if (d_setWayCoordinate(_posActorAt, toMove))
+		this->schedule(schedule_selector(BaseScene::update));
+}
+
+void BaseScene::d_update(float dt) {
+
+	if (_posActorAt == _posTarget) {
+		_initActByResult(0, 1);
+	}
+
+	if (!_way.empty() && _inc < _way.size()) {							//персонажи не должны перемещаться, если нет пути
+
+		if (_posActorAt == _way[_way.size() - 1]) {
+			this->unschedule(schedule_selector(BaseScene::update));		//если персонажи прибыли в место назначения - можно больше не двигаться
+			return;
+		}
+
+		Vec2 velocity = Vec2(_way[_inc].x - _posActorAt.x,
+			-(_way[_inc].y - _posActorAt.y));
+
+		if (velocity.x == 0 && velocity.y == 0) {
+			_inc++;
+			return;
+		}
+
+		_actor->setRotationSkewY((1 - velocity.x) * 90);
+
+		_actor->setPosition(Vec2(_actor->getPosition().x + velocity.x * dt * _speed,
+			_actor->getPosition().y + velocity.y * dt * _speed));
+
+		auto visibleSize = Director::getInstance()->getVisibleSize();
+		auto camera = this->getDefaultCamera();
 
 
-bool BaseScene::isBelong(int velocity, float from, float to) {
+		//X координата смещения камеры
+		if (_actor->getPosition().x < visibleSize.width / 2.f) {
+			camera->setPositionX(visibleSize.width / 2.f);
+		}
+		else if (_actor->getPositionX() > _map->getMapSize().width * _map->getTileSize().width * _map->getScale()
+			- (visibleSize.width / 2.f + 3 * _map->getTileSize().width * _map->getScale()))
+		{
+			camera->setPositionX(_map->getMapSize().width * _map->getTileSize().width * _map->getScale()
+				- (visibleSize.width / 2.f + 3 * _map->getTileSize().width * _map->getScale()));
+		}
+		/*else if (_actor->getPositionX() < _map->getMapSize().width * _map->getTileSize().width * _map->getScale()
+		- (visibleSize.width / 2.f + 3 * _map->getTileSize().width * _map->getScale()))
+		camera->setPositionX(_map->getMapSize().width * _map->getTileSize().width * _map->getScale() - (visibleSize.width / 2.f + 3 * _map->getTileSize().width * _map->getScale()));
+		*/
+		else {
+			camera->setPositionX(_actor->getPositionX());
+		}
+		_labelTask->setPositionX(camera->getPositionX() - 350);
+
+
+		//Y координата смещения камеры
+		if (_actor->getPositionY() < visibleSize.height / 2.f)
+			camera->setPositionY(visibleSize.height / 2.f);
+		else if (_actor->getPositionY() > _map->getMapSize().height * _map->getTileSize().height * _map->getScale() - visibleSize.height / 2.f) {
+			camera->setPositionY(_map->getMapSize().height * _map->getTileSize().height * _map->getScale() - visibleSize.height / 2.f);
+		}
+		else {
+			camera->setPositionY(_actor->getPositionY());
+		}
+		_labelTask->setPositionY(camera->getPositionY() + 200);
+
+
+		/*if (_actor->getPosition().x - this->getDefaultCamera()->getPosition().x > 0) {
+		this->getDefaultCamera()->setPosition(velocity.x * _map->getTileSize().width * _map->getScale() * dt + this->getDefaultCamera()->getPosition().x,
+		velocity.y * _map->getTileSize().height * _map->getScale() * dt + this->getDefaultCamera()->getPosition().y);
+		}*/
+
+		if (d_isBelong(velocity.x, _actor->getPosition().x, d_convert(_way[_inc]).x)
+			&& d_isBelong(velocity.y, _actor->getPosition().y, d_convert(_way[_inc]).y))
+		{
+			_posActorAt = _way[_inc];
+			_actor->setPosition(Vec2(d_convert(_posActorAt).x, d_convert(_posActorAt).y));
+			_inc++;
+		}
+	}
+}
+
+void BaseScene::d_initActor() {
+
+	//другое
+	_speed = 100;
+
+	//инициализация персонажа
+	_actor = Sprite::create("textures/warior.png");//Sprite::createWithSpriteFrameName("warior");
+	_actor->setPosition(Vec2(d_convert(_startPoints[0])));
+	_actor->setScale(2);
+	_posActorAt = _startPoints[0];
+	this->addChild(_actor);
+}
+
+bool BaseScene::d_isBelong(int velocity, float from, float to) {
 	if (velocity > 0 && to - from <= 0)
 		return true;
 	else if (velocity < 0 && to - from >= 0)
@@ -341,15 +329,13 @@ bool BaseScene::isBelong(int velocity, float from, float to) {
 	return false;
 }
 
-
-
-Vec2 BaseScene::convert(Vec2 vec) {
+Vec2 BaseScene::d_convert(Vec2 vec) {
 	float x = (vec.x + 0.5f) * _map->getTileSize().width * _map->getScale();
 	float y = (_map->getMapSize().height - vec.y) * _map->getTileSize().height * _map->getScale();
 	return Vec2(x, y);
 }
 
-void BaseScene::initMapWay() {
+void BaseScene::d_initMapWay() {
 	auto mapSize = _map->getMapSize();
 	auto layerPath = _map->getLayer("Path");
 
@@ -370,7 +356,7 @@ void BaseScene::initMapWay() {
 	}
 }
 
-bool BaseScene::setWayCoordinate(Vec2 a, Vec2 b) {
+bool BaseScene::d_setWayCoordinate(Vec2 a, Vec2 b) {
 
 	auto path = _path;
 
@@ -448,17 +434,6 @@ bool BaseScene::setWayCoordinate(Vec2 a, Vec2 b) {
 	_way[0] = Vec2(a.x, a.y);
 
 	return true;
-}
-
-void BaseScene::menuCloseCallback(Ref* pSender)
-{
-	//Close the cocos2d-x game scene and quit the application
-	Director::getInstance()->end();
-
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-	exit(0);
-#endif
-
 }
 
 

@@ -1,7 +1,6 @@
 #include "AppDelegate.h"
 #include "MenuScene.h"
 #include "LoadingScene.h"
-#include "BaseScene.h"
 
 // #define USE_AUDIO_ENGINE 1
 // #define USE_SIMPLE_AUDIO_ENGINE 1
@@ -96,11 +95,10 @@ bool AppDelegate::applicationDidFinishLaunching() {
     register_all_packages();
 
     // create a scene. it's an autorelease object
-    //LoadingScene* loadingScene = LoadingScene::createScene();
-	auto baseScene = BaseScene::createScene();
+    LoadingScene* loadingScene = LoadingScene::createScene();
 
     // run
-    director->runWithScene(baseScene);
+    director->runWithScene(loadingScene);
 
     return true;
 }

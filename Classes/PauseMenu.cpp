@@ -15,13 +15,13 @@ bool PauseMenu::init() {
 		return false;
 	}
 
-	auto visibleSize = Director::getInstance()->getVisibleSize();
+	Size visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
 	//add a transparent layer
-	auto dn = DrawNode::create();
-	dn->drawSolidRect(origin, Vec2(visibleSize.width, visibleSize.height), Color4F(0, 0, 0, 0.5));
-	this->addChild(dn, 1);
+	auto drawNode = DrawNode::create();
+	drawNode->drawSolidRect(origin, Vec2(visibleSize.width, visibleSize.height), Color4F(0, 0, 0, 0.5));
+	this->addChild(drawNode, 1);
 
 	auto listener = EventListenerKeyboard::create();
 	listener->onKeyPressed = CC_CALLBACK_2(PauseMenu::onKeyPressed, this);
@@ -42,8 +42,7 @@ bool PauseMenu::init() {
 	MenuItemLabel* resumeButton = MenuItemLabel::create(resume);
 	resumeButton->setPosition(150, 300);
 	resumeButton->setCallback([&](cocos2d::Ref *sender) {
-		this->removeAllChildren();
-		Director::getInstance()->getRunningScene()->resume();
+		_resumeGame();
 	});
 	mainMenu->addChild(resumeButton);
 
@@ -57,6 +56,21 @@ bool PauseMenu::init() {
 	return true;
 }
 
+void PauseMenu::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event) {
+	if (keyCode == EventKeyboard::KeyCode::KEY_ESCAPE) {
+		_resumeGame();
+	}
+}
+
+void PauseMenu::onKeyPressed(EventKeyboard::KeyCode keyCode, Event * event) {
+
+}
+
+void PauseMenu::_resumeGame() {
+	this->removeAllChildren();
+	Director::getInstance()->getRunningScene()->resume();
+}
+
 void PauseMenu::menuCloseCallback(Ref* pSender)
 {
 	//Close the cocos2d-x game scene and quit the application
@@ -65,16 +79,4 @@ void PauseMenu::menuCloseCallback(Ref* pSender)
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
 	exit(0);
 #endif
-}
-
-void PauseMenu::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event) {
-	if (keyCode == EventKeyboard::KeyCode::KEY_ESCAPE) {
-		auto director = Director::getInstance();
-		this->removeAllChildren();
-		director->getRunningScene()->resume();
-	}
-}
-
-void PauseMenu::onKeyPressed(EventKeyboard::KeyCode keyCode, Event * event) {
-	
 }
