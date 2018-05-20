@@ -1,6 +1,10 @@
 #include "MenuScene.h"
 #include "SimpleAudioEngine.h"
 #include "AnimationSet.h"
+<<<<<<< HEAD
+=======
+#include "BaseScene.h"
+>>>>>>> f_scene
 
 USING_NS_CC;
 
@@ -47,7 +51,7 @@ void MenuScene::onEnter() {
 	MenuItemLabel* playButton = MenuItemLabel::create(play);
 	playButton->setPosition(150, 300);
 	playButton->setCallback([&](cocos2d::Ref *sender) {
-		// replaceScene(BaseGameScene);
+		Director::getInstance()->replaceScene(BaseScene::create());
 	});
 	mainMenu->addChild(playButton);
 
