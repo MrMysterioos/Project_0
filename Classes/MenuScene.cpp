@@ -3,6 +3,7 @@
 #include "AnimationSet.h"
 #include "LevelInfo.h"
 #include "NoPlayerCharacter.h"
+#include "BaseScene.h"
 
 USING_NS_CC;
 
@@ -49,7 +50,7 @@ void MenuScene::onEnter() {
 	MenuItemLabel* playButton = MenuItemLabel::create(play);
 	playButton->setPosition(150, 300);
 	playButton->setCallback([&](cocos2d::Ref *sender) {
-		// replaceScene(BaseGameScene);
+		Director::getInstance()->replaceScene(BaseScene::create());
 	});
 	mainMenu->addChild(playButton);
 
@@ -97,7 +98,6 @@ void MenuScene::onEnter() {
 	addChild(npc);
 
 	//npc->setRotationX(-1);
-
 }
 
 void MenuScene::menuCloseCallback(Ref* pSender)
