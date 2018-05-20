@@ -7,5 +7,5 @@
   <!-- Campfires -->
   <campfire id="large_campfire" animation_set="animations/large_campfire.xml" />
   <!-- Containers -->
-  <container id="large_wood_chest" animation_set="animation/large_wood_chest.xml" />
+  <container id="large_wood_chest" animation_set="animations/large_wood_chest.xml" />
 </Objects>

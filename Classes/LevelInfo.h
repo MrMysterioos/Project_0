@@ -2,14 +2,9 @@
 
 #include "cocos2d.h"
 #include "ObjInfo.h"
+#include "Behavior.h"
 
 USING_NS_CC;
-
-/**
- * @brief ѕеречисление дл€ поределени€ команды, к которой принадлежит объект
- *
- */
-enum Team { FRIEND, ENEMY, NEUTRAL };
 
 /**
  * @brief —труктура, котора€ представл€ет собой переход между сюжетными актами
@@ -42,17 +37,6 @@ struct Act {
 struct Reward {
 	int gold, provision, experience;
 	std::vector<std::string> artifacts;
-};
-
-/**
-* @brief —труктура Behavior €вл€етс€ дополнительным параметром дл€ актеров, определ€ющим их поведение
-*
-* Behavior, в отличие от ObjectInfo, €вл€етс€ переменным параметром игрового объекта.
-* ѕараметр Behavior может измен€тс€ в переходах между сюжетыми актами.
-*/
-struct Behavior {
-	std::string name; // отображаемое им€
-	Team team; // команда (друг, враг или нейтральный)
 };
 
 /**
