@@ -5,6 +5,7 @@
 #include "ui/CocosGUI.h"
 #include <string>
 #include <vector>
+//#include "PlayerCharacter.h"
 
 using namespace cocos2d;
 

@@ -89,15 +89,14 @@ void MenuScene::onEnter() {
 	auto seq = Sequence::create(act1, act2, nullptr);
 	auto rep = RepeatForever::create(seq);
 	auto action = test->runAction(rep);*/
-	
+
 
 	NoPlayerCharacter *npc = NoPlayerCharacter::create(actorRole.objInf);
 	npc->setBehavior(actorRole.getBehavior(-1));
-	npc->setPosition(Vec2(visibleSize.width/2, visibleSize.height/2));
+	npc->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
 	npc->setScale(4);
 	addChild(npc);
 
-	//npc->setRotationX(-1);
 }
 
 void MenuScene::menuCloseCallback(Ref* pSender)

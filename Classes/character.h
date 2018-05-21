@@ -1,5 +1,6 @@
 #pragma once
 #include "Actor.h"
+#include "BaseScene.h"
 
 USING_NS_CC;
 

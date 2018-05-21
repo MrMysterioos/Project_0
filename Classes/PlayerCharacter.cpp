@@ -38,55 +38,36 @@ bool PlayerCharacter::init(ObjectInfo objInfo) {
 	return true;
 }
 
-/*void PlayerCharacter::setWay(std::vector<Vec2> *way) {
-	MoveBy *move;
-	while (way != nullptr) {
-		switch (int(way->back().x) - int(getPositionInTile().x)) {
-		case 1: {
-			move = MoveBy::create(5 / _speed, Vec2(tileSize, 0));
-			_way.pushBack(move);
-			way->pop_back();
-			continue;
-		}
-		case -1: {
-			move = MoveBy::create(5 / _speed, Vec2(-tileSize, 0));
-			_way.pushBack(move);
-			way->pop_back();
-			continue;
-		}
-		case 0: {
-			switch (int(way->back().y) - int(getPositionInTile().y)) {
-			case 1: {
-				move = MoveBy::create(5 / _speed, Vec2(0, tileSize));
-				_way.pushBack(move);
-				way->pop_back();
-				continue;
-			}
-			case -1: {
-				move = MoveBy::create(5 / _speed, Vec2(0, -tileSize));
-				_way.pushBack(move);
-				way->pop_back();
-				continue;
-			}
-			}
-		}
-		}
-	}
-	
-	moving();
-}*/
-
 void PlayerCharacter::update(float dt) {
-	//Node::
+	static float prevPosition = 0;
+
+	if (prevPosition < getPosition().x)			this->setRotationSkewY(-180);
+	else if (prevPosition > getPosition().x)	this->setRotationSkewY(0);
+
+	prevPosition = getPosition().x;
+
+	if (!_way.empty())
+	{
+		if (_way.front()->isDone())
+		{
+			_way.pop();
+			this->runAction(_way.front());
+			if (_way.size() < 1)
+			{
+				changeState(walk);
+			}
+			else changeState(run);
+		}
+		else if (_state == idle)
+		{
+			this->runAction(_way.front());
+			changeState(walk);
+		}
+	} else {
+		changeState(idle);
+		unscheduleUpdate();
+	}
 }
-
-/*void PlayerCharacter::moving() {
-	Sequence *move = Sequence::create(_way);
-	this->runAction(move);
-	
-
-	scheduleUpdate();
-}*/
 
 void PlayerCharacter::changeState(State newState) {
 	if (_state != newState) {
@@ -120,10 +101,13 @@ void PlayerCharacter::changeState(State newState) {
 }
 
 void PlayerCharacter::goTo(Vec2 where) {
+	while (!_way.empty())
+		_way.pop();
+
 	auto parent = this->getParent();
 	auto scene = dynamic_cast<BaseScene*> (parent);
-	Size mapSize;// = scene->getMapSize();
-	std::vector<std::vector<int> > binaryMap = scene->getBinaryMap();
+	Size mapSize = scene->getMapSize();
+	std::vector<std::vector<int> > binaryMap = scene->getMapMatrix();
 
 	std::vector<std::vector<Vec2> > root;
 	std::vector<std::vector<int> > distance;
@@ -182,7 +166,7 @@ void PlayerCharacter::goTo(Vec2 where) {
 		}
 	}
 	
-	Vec2 current = getPositionInTile();
+	Vec2 current = this->getPositionInTile();
 	while(current != where)
 	{
 		Vec2 step = current - root[current.x][current.y];
@@ -193,4 +177,6 @@ void PlayerCharacter::goTo(Vec2 where) {
 
 		current = root[current.x][current.y];
 	}
+
+	scheduleUpdate();
 }
