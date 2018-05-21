@@ -3,12 +3,25 @@
 #include "Character.h"
 
 USING_NS_CC;
-
+/**
+* @brief  ласс объекты которого €вл€ютс€ управл€емыми игровыми персонажами.
+* ≈диновременно может существовать только один объект этого класса ( в доработке )
+*
+*/
 class PlayerCharacter : public Character {
 public:
+	/*
+	* @brief —оздать новый экземпл€р класса
+	*
+	* @return —сылку на новый экземпл€р
+	*/
 	static PlayerCharacter *create(ObjectInfo);
-
-	void setWay(std::vector<Vec2>*);
+	/*
+	* @brief ќтправить персонажа в указанную точку
+	*
+	* @arguments “айловые координаты точки назначени€
+	*/
+	void goTo(Vec2);
 
 private:
 	enum State { idle, walk, run } _state;
@@ -17,15 +30,12 @@ private:
 
 	bool init(ObjectInfo);
 
-	void goTo(Vec2);
-
-	void moving();
-
 	void update(float) override;
 
 	void changeState(State);
 
 	Team _team;
+
 	std::string _name;
 
 	std::queue<FiniteTimeAction*> _way;

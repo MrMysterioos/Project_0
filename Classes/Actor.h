@@ -18,7 +18,16 @@ protected:
 	virtual bool init();
 
 public:
+	/*
+	* @brief Задать тайл, в котором разместится объект
+	*
+	* @arguments Тайловые координаты точки
+	*/
 	void setPositionInTile(Vec2);
-
+	/*
+	* @brief Получить тайловые координаты объекта
+	*
+	* @return Тайловые координаты в виде Vec2
+	*/
 	Vec2 getPositionInTile();
 };
