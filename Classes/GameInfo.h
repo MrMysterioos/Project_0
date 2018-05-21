@@ -5,6 +5,7 @@
 #include "LevelInfo.h"
 
 USING_NS_CC;
+
 /**
  * @brief Синглтон, содержащий информацию из файла сохранения
  *
@@ -15,7 +16,7 @@ class GameInfo : public Ref {
 public:
 
 	/**
-<<<<<<< HEAD
+
 	 * @brief Метод, возвращающий экземпляр синглтона GameInfo
 	 *
 	 */
@@ -59,7 +60,7 @@ public:
 	 * @brief Получить имеющиеся количество золота
 	 *
 	 */
-	inline int getGolg() { return _gold; }
+	inline int getGold() { return _gold; }
 
 	/**
 	 * @brief Получить глобальное время

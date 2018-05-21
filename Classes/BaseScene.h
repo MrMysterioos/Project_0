@@ -2,76 +2,94 @@
 
 #include "GameScene.h"
 #include "cocos2d.h"
+#include "ui/CocosGUI.h"
 #include <string>
 #include <vector>
 
 using namespace cocos2d;
 
+/**
+* @brief Класс, представляющий собой главную игровую сцену
+*
+* Данная сцена запускается при нажатии на кнопку Play в главном меню
+*/
 class BaseScene : public GameScene {
 public:
 	static cocos2d::Scene * createScene();
 
-	virtual bool init();
+	virtual bool init() override;
 
-	void menuCloseCallback(cocos2d::Ref * pSender);
+	void onKeyPressed(EventKeyboard::KeyCode keyCode, Event * event) override;
 
-	virtual void onKeyPressed(EventKeyboard::KeyCode keyCode, Event * event);
+	void onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event) override;
 
-	virtual void onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event);
+	void update(float dt) override;
 
-	virtual void onMouseDown(Event * event);
+	void onMouseDown(Event * event);
 
-	void update(float dt);
+	/**
+	* @brief Получить матрицу карты
+	* @return Возвращает целочисленную матрицу tmx карты, где показаны места, по которым можно перемещаться
+	*/
+	inline const std::vector< std::vector<int> > & getMapMatrix() { return _path; }
+
+	/**
+	* @brief Получить размер карты
+	* @return Возвращает размер карты в тайлах
+	*/
+	inline const Size & getMapSize() { return _map->getMapSize(); }
+
+	/**
+	* @brief Получить размер тайла
+	* @return Возвращает размер тайла в пикселях
+	*/
+	inline const Size & getTileSize() { return _map->getTileSize() * _map->getScale(); }
+
 
 	CREATE_FUNC(BaseScene);
+
 private:
-	//функция задания вектора пути перемещения
-	//применяется волновой алгоритм
-	//применяются два аргумента а - начальная точка, b - конечная
-	bool setWayCoordinate(Vec2 a, Vec2 b);
+	//*********
+	//НАРАБОТКИ
+	//*********
 
-	//функция инициализации вектора представления карты
-	void initMapWay();
+	//инициализирует данные о задании относительно заданного акта
+	void _initActScene(int id);
 
-	//конвертирует из тайл-координат в пиксельную координату
-	Vec2 convert(Vec2 vec);
+	void _initActByResult(int id, int result);
+	void _initActByResult(int id, bool result);
 
-	//функция, которая определяет зашла ли точка from за to
-	//где velocity направление, в котором должна двигаться точка
-	//используется и для оси x и для оси y по-отдельности
-	bool isBelong(int velocity, float from, float to);
-private:
-
+public:
 	//константа, обозначающая препятствие на векторе пути перемещения
 	const int WALL = -1;
 	//константа, обозначающая возможность прохода на векторе пути перемещения
 	const int BLANK = -2;
 
+private:
 	TMXTiledMap * _map;
 
 	//вектор из координат точек старта в тайл-координатах
 	std::vector<Vec2> _startPoints;
-	
-	//вектор пути перемещения в тайл-координатах
-	std::vector<Vec2> _way;
-	
+
 	//вектор представления карты в тайл-координатах виде
 	std::vector< std::vector<int> > _path;
 
+	//*********
+	//НАРАБОТКИ
+	//*********
 
+	//это лейбл, который выводит задание
+	Label * _labelTask;
 
-	/************************/
-	Sprite * _actor;
-	float _speed;
+	//строка, которая содержит задание
+	std::string _task;
 
-	//позиция персонажа относительно карты в тайл-координатах
-	Vec2 _posActorAt;
+	//имя одной из цели, к которой нужно перемещаться
+	std::string _targetName;
 
-	//переменная, которая перемещает нас по _way в update()
-	int _inc;	
+	//позиция, к которой нужно передвигаться, чтобы выполнить задание
+	Vec2 _posTarget;
 
-	Sprite * _cameraTarget;
-	Follow * _camera;
-	
-	/****************************/
+	//номер акта в игре
+	int _actID;
 };

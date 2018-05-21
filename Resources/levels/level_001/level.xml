@@ -50,8 +50,9 @@
         <tasks>
           <defeat target="Copa" />
           <defeat target="Roka" />
+          <defeat target="Marco" />
         </tasks>
-        <next id="2" final="true" />
+        <next id="2" final="false" />
       </transition>
     </act>
     
