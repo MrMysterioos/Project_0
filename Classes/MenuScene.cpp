@@ -1,10 +1,7 @@
 #include "MenuScene.h"
 #include "SimpleAudioEngine.h"
 #include "AnimationSet.h"
-<<<<<<< HEAD
-=======
 #include "BaseScene.h"
->>>>>>> f_scene
 
 USING_NS_CC;
 
