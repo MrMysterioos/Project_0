@@ -28,5 +28,5 @@ private:
 	Team _team;
 	std::string _name;
 
-	Vector<FiniteTimeAction*> _way;
+	std::queue<FiniteTimeAction*> _way;
 };

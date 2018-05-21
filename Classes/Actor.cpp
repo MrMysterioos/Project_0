@@ -22,5 +22,5 @@ void Actor::setPositionInTile(Vec2 coord) {
 }
 
 Vec2 Actor::getPositionInTile() {
-	return Vec2(this->getPosition().x / tileSize, this->getPosition().y /tileSize);
+	return Vec2(this->getPosition().x / tileSize, this->getPosition().y / tileSize);
 }

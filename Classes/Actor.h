@@ -1,6 +1,8 @@
 #include "cocos2d.h"
-#include "LevelInfo.h"
+#include "Behavior.h"
+#include "ObjInfo.h"
 #include "AnimationSet.h"
+#include "BaseScene.h"
 
 class Actor: public Node {
 protected:
