@@ -1,4 +1,5 @@
 #include "PlayerCharacter.h"
+#include "BaseScene.h"
 
 USING_NS_CC;
 
