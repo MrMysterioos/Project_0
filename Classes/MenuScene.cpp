@@ -62,40 +62,21 @@ void MenuScene::onEnter() {
 	mainMenu->addChild(exitButton);
 
 	// alising test
-	/*Sprite* test = Sprite::create("textures/large_wood_chest.png");
-	test->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
-	test->setScale(4);*/
-
-	/*Sprite* test = Sprite::create();
-	test->setContentSize(Size(64, 64));
+	Sprite* test = Sprite::create("textures/large_wood_chest.png");
 	test->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
 	test->setScale(4);
 
-	this->addChild(test);*/
-
-	LevelInfo* li = LevelInfo::create("levels/level_001");
-	std::map<std::string, Role> actors = li->LevelInfo::getActorMap();
-	Role actorRole = actors.at("Sven");
-	/*
-	Behavior Actor = actorRole.getBehavior(-1);
-	auto chestSource = actorRole.objInf.getAttribute("animation_set");
+	this->addChild(test);
 
 	// AnimationSet
-	AnimationSet* animSet = AnimationSet::create(chestSource);
+	AnimationSet* animSet = AnimationSet::create("animations/large_wood_chest.xml");
 	auto anim1 = animSet->getAnimation("open");
 	auto anim2 = animSet->getAnimation("close");
 	auto act1 = Animate::create(anim1);
 	auto act2 = Animate::create(anim2);
 	auto seq = Sequence::create(act1, act2, nullptr);
 	auto rep = RepeatForever::create(seq);
-	auto action = test->runAction(rep);*/
-
-
-	NoPlayerCharacter *npc = NoPlayerCharacter::create(actorRole.objInf);
-	npc->setBehavior(actorRole.getBehavior(-1));
-	npc->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
-	npc->setScale(4);
-	addChild(npc);
+	auto action = test->runAction(rep);
 
 }
 

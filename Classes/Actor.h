@@ -13,7 +13,7 @@ protected:
 
 	AnimationSet *_animationSet;
 
-	short int tileSize = 64;
+	Size tileSize = Size(48,48);
 
 	virtual bool init();
 

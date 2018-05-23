@@ -18,9 +18,9 @@ bool Actor::init() {
 }
 
 void Actor::setPositionInTile(Vec2 coord) {
-	return this->setPosition(coord * tileSize);
+	return this->setPosition((coord.x + 0.5) * tileSize.width, coord.y * tileSize.height);
 }
 
 Vec2 Actor::getPositionInTile() {
-	return Vec2(getPosition().x / tileSize, getPosition().y / tileSize);
+	return Vec2(int(getPosition().x / tileSize.width), int(getPosition().y / tileSize.height));
 }

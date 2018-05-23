@@ -38,5 +38,5 @@ private:
 
 	std::string _name;
 
-	std::queue<FiniteTimeAction*> _way;
+	std::queue<MoveBy*> _way;
 };

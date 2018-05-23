@@ -1,4 +1,5 @@
 #include "NoPlayerCharacter.h"
+#include "BaseScene.h"
 
 USING_NS_CC;
 
@@ -26,9 +27,9 @@ bool NoPlayerCharacter::init(ObjectInfo objInfo) {
 	std::string resSource	= _objInfo.getAttribute("animation_set");
 	_animationSet = AnimationSet::create(resSource);
 
-	Sprite* _sprite = Sprite::create();
-	_sprite->setContentSize(Size(64, 64));
-	NoPlayerCharacter::addChild(_sprite);
+	auto parent = this->getParent();
+	auto scene = dynamic_cast<BaseScene*> (parent);
+	tileSize = scene->getTileSize();
 
 	Animation *_animation = _animationSet->getAnimation("idle");
 	Animate *_animate = Animate::create(_animation);
