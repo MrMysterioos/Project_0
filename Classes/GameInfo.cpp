@@ -54,9 +54,7 @@ bool GameInfo::initWithFile(std::string source) {
 				// init heroes
 				ObjectInfo tempHero;
 				tempHero.initWithXmlElement(eHero);
-
 				_heroes.push_back(tempHero);
-
 				eHero = eHero->NextSiblingElement("character");
 			}
 		}

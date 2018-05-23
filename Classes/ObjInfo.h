@@ -28,6 +28,13 @@ public:
 	bool initWithXmlElement(tinyxml2::XMLElement* node);
 
 	/**
+	* @brief Метод, инициализирующий ObjectInfo из XML документа по его id
+	* @param [in] doc Путь до документа
+	* @param [in] id Id элемента описанного в файле
+	*/
+	bool initWithElementId(std::string doc, std::string id);
+
+	/**
 	 * @brief Получить тег типа
 	 *
 	 */

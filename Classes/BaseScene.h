@@ -34,6 +34,18 @@ public:
 	*/
 	inline const std::vector< std::vector<int> > & getMapMatrix() { return _path; }
 
+	/**
+	* @brief Получить размер карты
+	* @return Возвращает размер карты в тайлах
+	*/
+	inline const Size & getMapSize() { return _map->getMapSize(); }
+
+	/**
+	* @brief Получить размер тайла
+	* @return Возвращает размер тайла в пикселях
+	*/
+	inline const Size & getTileSize() { return _map->getTileSize() * _map->getScale(); }
+
 
 	CREATE_FUNC(BaseScene);
 
