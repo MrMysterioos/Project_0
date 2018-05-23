@@ -5,6 +5,7 @@
 #include "ui/CocosGUI.h"
 #include <string>
 #include <vector>
+#include <map>
 
 using namespace cocos2d;
 
@@ -41,11 +42,14 @@ private:
 	//Ќј–јЅќ“ »
 	//*********
 
+	void GameOver();
+
 	//инициализирует данные о задании относительно заданного акта
 	void _initActScene(int id);
 
-	void _initActByResult(int id, int result);
-	void _initActByResult(int id, bool result);
+	void _initActByResult(int result);
+	void _initActByResult(bool result);
+	void _initTasksBattleAct();
 
 
 	//*********
@@ -90,17 +94,12 @@ private:
 	//вектор представлени€ карты в тайл-координатах виде
 	std::vector< std::vector<int> > _path;
 
-	/************************/
-		
-
-	Sprite * _cameraTarget;
-	Follow * _camera;
-	
-	/****************************/
-
 	//*********
 	//Ќј–јЅќ“ »
 	//*********
+
+	std::map<std::string, bool> _tasks;
+	int _countTasks;
 
 	//это лейбл, который выводит задание
 	Label * _labelTask;
@@ -109,14 +108,13 @@ private:
 	std::string _task;
 
 	//им€ одной из цели, к которой нужно перемещатьс€
-	std::string _targetName;
+	std::string _typeAct;
 
 	//позици€, к которой нужно передвигатьс€, чтобы выполнить задание
 	Vec2 _posTarget;
 
 	//номер акта в игре
 	int _actID;
-
 
 	//*********
 	//¬—ѕќћќ√ј“≈Ћ№Ќџ…  ќƒ

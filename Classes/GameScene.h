@@ -49,3 +49,9 @@ public:
 	*/
 	virtual void update(float dt) = 0;
 };
+
+int getNumberFromExpression(const std::string & s);
+
+const std::string getStringFromInt(int number);
+
+const std::string getReturnScene(const std::string & s);

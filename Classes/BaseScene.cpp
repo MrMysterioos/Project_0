@@ -1,6 +1,7 @@
 #include "BaseScene.h"
 #include "GameInfo.h"
 #include "DialogScene.h"
+#include "BattleScene.h"
 #include "cocos2d.h"
 
 using namespace std;
@@ -13,7 +14,9 @@ bool BaseScene::init() {
 
 	//TODO инициализировать из файла сохранени€
 	//≈сли он отсутствует или игра только начата, то приравн€ть к нулю
-	_actID = 0;
+	_actID = 1;
+
+	_countTasks = 0;
 
 	GameScene::init();
 
@@ -85,14 +88,23 @@ bool BaseScene::init() {
 	_initActScene(_actID);
 
 	//Ќј–јЅќ“ »
-	auto listener = EventListenerCustom::create("game_custom_event1", [=](EventCustom* event) {
-		/*std::string str("Custom event 1 received, ");
+	auto listener = EventListenerCustom::create("BaseScene", [=](EventCustom* event) {
+		std::string str("");
 		char* buf = static_cast<char*>(event->getUserData());
 		str += buf;
-		str += " times";
-		auto x = event->getEventName();*/
+		if (getReturnScene(str) == "dialog") {
+			int result = getNumberFromExpression(str); 
+			_initActByResult(result);
+		}
+		else if (getReturnScene(str) == "battle") {
+			bool result = getNumberFromExpression(str);
+			_initActByResult(result);
+		}
+		int id = _actID;
+		auto tta = _typeAct;
+		auto x = event->getEventName();
 	});
-	//_eventDispatcher->addEventListenerWithFixedPriority(listener, 1);
+	_eventDispatcher->addEventListenerWithFixedPriority(listener, 1);
 
 	return true;
 }
@@ -109,18 +121,24 @@ void BaseScene::_initActScene(int id) {
 	auto transition = quest.find(id)->second.trans.begin();
 	auto tasks = transition->tasks;
 
-	std::string typeAct = transition->tasks.begin()->getTypeName();
-	if (typeAct == "talk") {
+	_typeAct = transition->tasks.begin()->getTypeName();
+	if (_typeAct == "talk") {
 		_task = "Talk to ";
 	}
-	else if (typeAct == "defeat") {
+	else if (_typeAct == "defeat") {
 		_task = "Defeat to ";
 	}
+
+	_tasks.clear();
 
 	int count = 1;
 	for (auto it = tasks.begin(); it != tasks.end(); ++it) {
 
 		std::string target = it->getAttribute("target");
+
+		if (_typeAct == "defeat") {
+			_tasks.insert(std::pair<std::string, bool>(target, false));
+		}
 
 		//TODO поработать над алгоритмами, чтобы выводило задание красиво
 		if (_task.size() > unsigned(10 * count)) {
@@ -142,27 +160,24 @@ void BaseScene::_initActScene(int id) {
 		}
 	}
 	_labelTask->setString(_task.c_str());
-
-	auto _targetName = tasks.begin()->getAttribute("target");
+	auto _targetName = (tasks.begin())->getAttribute("target");
 	auto objectGroup =_map->getObjectGroup("Actors");
 	auto obj = objectGroup->getObject(_targetName);
-
 	auto del = _map->getTileSize();
 
 	_posTarget = Vec2((obj.at("x").asFloat()) / del.width, _map->getMapSize().height - (obj.at("y").asFloat()) / del.width-2);
-	auto dskl = _posActorAt;
 }
 
-void BaseScene::_initActByResult(int id, int result) {
-	auto quest = GameInfo::getInstance()->getLevel()->getQuest();
+void BaseScene::_initActByResult(int result) {
+	auto li = GameInfo::getInstance()->getLevel();
+	auto quest = li->getQuest();
 
 	//id акта не может быть больше количества актов
-	if (id >= quest.size()) {
+	if (_actID >= quest.size()) {
 		return;
-		}
+	}
 
-	auto transition = quest.find(id)->second.trans;
-	//auto tasks = transition->tasks;
+	auto transition = quest.find(_actID)->second.trans;
 
 	for (auto it : transition) {
 
@@ -174,14 +189,74 @@ void BaseScene::_initActByResult(int id, int result) {
 				break;
 			}
 			else if (result == atoi(res.c_str()) && it.final) {
-				//TODO получение награды
+				//TODO ѕередача награды персанажу
+				auto reward = li->getRewards().at(it.next);
+				_posTarget = Vec2(0, 0);
+				_task = "You win";
+				_labelTask->setString(_task);
 			}
 		}
 	}
 }
 
-void BaseScene::_initActByResult(int id, bool result) {
+void BaseScene::_initActByResult(bool result) {
+	auto quest = GameInfo::getInstance()->getLevel()->getQuest();
 
+	//id акта не может быть больше количества актов
+	if (_actID >= quest.size()) {
+		return;
+	}
+
+
+	if (result) {
+		_initTasksBattleAct();
+	}
+	else {
+		GameOver();
+		_posTarget = Vec2(0, 0);
+	}
+}
+
+void BaseScene::_initTasksBattleAct() {
+	int count = 0;
+	for (auto i : _tasks) {
+		if (count == _countTasks) {
+			i.second = true;
+		}
+		count++;
+	}
+
+	bool isTrue = true;
+	for (auto i : _tasks) {
+		if (!i.second) {
+			isTrue = false;
+			auto x = 5;
+		}
+	}
+
+	if (isTrue) {
+		_countTasks = 0;
+		_actID++;
+		_initActScene(_actID);
+		return;
+	}
+
+	_countTasks++;
+
+	auto quest = GameInfo::getInstance()->getLevel()->getQuest();
+	auto transition = quest.find(_actID)->second.trans.begin();
+	auto tasks = transition->tasks;
+
+	auto _targetName = (tasks.begin() + _countTasks)->getAttribute("target");
+	auto objectGroup = _map->getObjectGroup("Actors");
+	auto obj = objectGroup->getObject(_targetName);
+	auto del = _map->getTileSize();
+	_posTarget = Vec2((obj.at("x").asFloat()) / del.width, _map->getMapSize().height - (obj.at("y").asFloat()) / del.width - 2);
+}
+
+void BaseScene::GameOver() {
+	_task = "You died";
+	_labelTask->setString(_task);
 }
 
 void BaseScene::update(float dt) {
@@ -189,6 +264,25 @@ void BaseScene::update(float dt) {
 }
 
 void BaseScene::onMouseDown(Event * event) {
+	d_onMouseDown(event);
+}
+
+void BaseScene::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event) {
+	GameScene::onKeyReleased(keyCode, event);
+	if (keyCode == EventKeyboard::KeyCode::KEY_TAB) {
+		_labelTask->setOpacity(0);
+	}
+}
+
+void BaseScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event * event) {
+	if (keyCode == EventKeyboard::KeyCode::KEY_TAB) {
+		_labelTask->setOpacity(1000);
+	}
+}
+
+////¬—ѕќћќ√ј“≈Ћ№Ќџ…  ќƒ
+
+void BaseScene::d_onMouseDown(Event * event) {
 	EventMouse* e = (EventMouse*)event;
 
 	float x = this->getDefaultCamera()->getPosition().x - Director::getInstance()->getVisibleSize().width / 2.f;
@@ -210,28 +304,31 @@ void BaseScene::onMouseDown(Event * event) {
 		this->schedule(schedule_selector(BaseScene::update));
 }
 
-void BaseScene::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event) {
-	GameScene::onKeyReleased(keyCode, event);
-	if (keyCode == EventKeyboard::KeyCode::KEY_TAB) {
-		_labelTask->setOpacity(0);
-	}
-}
-
-void BaseScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event * event) {
-	if (keyCode == EventKeyboard::KeyCode::KEY_TAB) {
-		_labelTask->setOpacity(1000);
-	}
-}
-
-////¬—ѕќћќ√ј“≈Ћ№Ќџ…  ќƒ
-
-void BaseScene::d_onMouseDown(Event * event) {
-}
-
 void BaseScene::d_update(float dt) {
 
 	if (_posActorAt == _posTarget) {
-		_initActByResult(0, 1);
+		char buffer[10];
+		sprintf_s(buffer, 10, "%d", _actID);
+
+		if (_typeAct == "talk") {
+			auto scene = DialogScene::createScene();
+			EventCustom event("DialogScene");
+			event.setUserData(buffer);
+			_eventDispatcher->dispatchEvent(&event);
+			_way.clear();
+
+			Director::getInstance()->pushScene(scene);
+		}
+		else if (_typeAct == "defeat") {
+			//TODO call to event BattleScene
+			auto scene = BattleScene::createScene();
+			EventCustom event("BattleScene");
+			event.setUserData(buffer);
+			_eventDispatcher->dispatchEvent(&event);
+			_way.clear();
+
+			Director::getInstance()->pushScene(scene);
+		}
 	}
 
 	if (!_way.empty() && _inc < _way.size()) {							//персонажи не должны перемещатьс€, если нет пути
@@ -434,5 +531,3 @@ bool BaseScene::d_setWayCoordinate(Vec2 a, Vec2 b) {
 
 	return true;
 }
-
-

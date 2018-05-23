@@ -49,3 +49,37 @@ void GameScene::menuCloseCallback(Ref* pSender)
 #endif
 }
 
+int getNumberFromExpression(const std::string & str) {
+	std::string strNumber = "";
+	bool isDigit = false;
+	int number = 0;
+	for (unsigned i = 0; i < str.size(); ++i) {
+		if (str[i] == '=') {
+			isDigit = true;
+		}
+		if (isDigit && isdigit(str[i])) {
+			strNumber += str[i];
+		}
+	}
+	number = atoi(strNumber.c_str());
+	return number;
+}
+
+const std::string getStringFromInt(int number) {
+	std::ostringstream oss;
+	oss << number;
+	return oss.str();
+}
+
+const std::string getReturnScene(const std::string & s) {
+	std::string str = "";
+	for (unsigned i = 0; i < s.size(); ++i) {
+		if (s[i] == '=') {
+			break;
+		}
+		else {
+			str += s[i];
+		}
+	}
+	return str;
+}

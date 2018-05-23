@@ -7,7 +7,6 @@
 #include <vector>
 
 using namespace cocos2d;
-using namespace cocos2d::ui;
 
 class DialogScene : public GameScene {
 public:
@@ -23,12 +22,9 @@ public:
 
 	virtual void onMouseDown(Event * event);
 
-	void setID(int ID);
-
 	void update(float dt);
 
 	CREATE_FUNC(DialogScene);
 private:
-	std::string _actID;
-	Button* button;
+	int _actID;
 };

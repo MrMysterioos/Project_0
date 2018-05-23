@@ -1,10 +1,11 @@
-#include "DialogScene.h"
+#include "BattleScene.h"
 
-Scene* DialogScene::createScene() {
-	return DialogScene::create();
+Scene * BattleScene::createScene() {
+	return BattleScene::create();
 }
 
-bool DialogScene::init() {
+
+bool BattleScene::init() {
 	GameScene::init();
 
 	if (!Scene::init()) {
@@ -24,15 +25,15 @@ bool DialogScene::init() {
 	std::string fontName("fonts/Pixel.ttf");
 
 	// add war button
-	Label* labelWar = Label::createWithTTF("1. Go to the war", fontName, 36);
+	Label* labelWar = Label::createWithTTF("1. War win", fontName, 36);
 	MenuItemLabel* warButton = MenuItemLabel::create(labelWar);
 	warButton->setPosition(750, 300);
 	warButton->setCallback([&](cocos2d::Ref *sender) {
 		EventCustom event("BaseScene");
 
-		char buffer[10];
-		char nameScene[] = "dialog";
-		sprintf_s(buffer, 10, "%s=%d", nameScene, 1);
+		char buffer[20];
+		char nameScene[] = "battle";
+		sprintf_s(buffer, 20, "%s=1", nameScene);
 
 		event.setUserData(buffer);
 		_eventDispatcher->dispatchEvent(&event);
@@ -41,15 +42,15 @@ bool DialogScene::init() {
 	mainMenu->addChild(warButton);
 
 	// add peace button
-	Label* lavelPeace = Label::createWithTTF("2. Don't go to the war", fontName, 36);
+	Label* lavelPeace = Label::createWithTTF("2. You died", fontName, 36);
 	MenuItemLabel* peaceButton = MenuItemLabel::create(lavelPeace);
-	peaceButton->setPosition(750, 200); 
+	peaceButton->setPosition(750, 200);
 	peaceButton->setCallback([&](cocos2d::Ref *sender) {
 		EventCustom event("BaseScene");
 
-		char buffer[10];
-		char nameScene[] = "dialog";
-		sprintf_s(buffer, 10, "%s=%d", nameScene, 2);
+		char buffer[20];
+		char nameScene[] = "battle";
+		sprintf_s(buffer, 20, "%s=0", nameScene);
 
 		event.setUserData(buffer);
 		_eventDispatcher->dispatchEvent(&event);
@@ -57,7 +58,7 @@ bool DialogScene::init() {
 	});
 	mainMenu->addChild(peaceButton);
 
-	auto _listener = EventListenerCustom::create("DialogScene", [=](EventCustom* event) {
+	auto _listener = EventListenerCustom::create("BattleScene", [=](EventCustom* event) {
 		std::string str("");
 		char* buf = static_cast<char*>(event->getUserData());
 		str += buf;
@@ -69,23 +70,11 @@ bool DialogScene::init() {
 	return true;
 }
 
-void DialogScene::update(float dt) {
+void BattleScene::update(float dt) {
 
 }
 
-void DialogScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event * event) {
-
-}
-
-void DialogScene::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event) {
-
-}
-
-void DialogScene::onMouseDown(Event * event) {
-
-}
-
-void DialogScene::menuCloseCallback(Ref* pSender)
+void BattleScene::menuCloseCallback(Ref* pSender)
 {
 	//Close the cocos2d-x game scene and quit the application
 	Director::getInstance()->end();
