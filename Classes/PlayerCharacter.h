@@ -15,20 +15,29 @@ public:
 	*
 	* @return Ссылку на новый экземпляр
 	*/
-	static PlayerCharacter *create(ObjectInfo);
+	static PlayerCharacter *create();
+	/*
+	* @brief Инициализация игрового персонажа, загрузка всех его основных параметров.
+	*
+	* @arguments ObjectInfo персонажа
+	*/
+	bool init(ObjectInfo playerInfo);
 	/*
 	* @brief Отправить персонажа в указанную точку
 	*
 	* @arguments Тайловые координаты точки назначения
 	*/
 	void goTo(Vec2);
+	/**
+	* @brief Функция мгновенной остановки перемещения персонажа
+	*
+	*/
+	void stopMoving();
 
 private:
 	enum State { idle, walk, run } _state;
 
 	PlayerCharacter();
-
-	bool init(ObjectInfo);
 
 	void update(float) override;
 
@@ -38,5 +47,5 @@ private:
 
 	std::string _name;
 
-	std::queue<MoveBy*> _way;
+	std::deque<std::pair<MoveTo*, int> > _way;
 };

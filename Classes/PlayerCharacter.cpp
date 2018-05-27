@@ -5,9 +5,9 @@ USING_NS_CC;
 
 PlayerCharacter::PlayerCharacter() {};
 
-PlayerCharacter *PlayerCharacter::create(ObjectInfo objInfo) {
+PlayerCharacter *PlayerCharacter::create() {
 	PlayerCharacter *_char = new (std::nothrow) PlayerCharacter();
-	if (_char && _char->init(objInfo))
+	if (_char)
 	{
 		_char->autorelease();
 		return _char;
@@ -20,6 +20,10 @@ bool PlayerCharacter::init(ObjectInfo objInfo) {
 
 	_objInfo = objInfo;
 
+	auto parent = this->getParent();
+	auto scene = dynamic_cast<BaseScene*> (parent);
+	tileSize = scene->getTileSize();
+
 	_healthPoints			= atoi(_objInfo.getAttribute("health").c_str());
 	_speed					= atoi(_objInfo.getAttribute("speed").c_str());
 	_attackPower			= atoi(_objInfo.getAttribute("damage").c_str());
@@ -29,9 +33,8 @@ bool PlayerCharacter::init(ObjectInfo objInfo) {
 	_animationSet->retain();
 
 	_sprite = Sprite::create();
-	//_sprite->setContentSize(tileSize*2);
-	_sprite->setScale(1.5);
-	_sprite->setAnchorPoint(Vec2(0.5, 0));
+	_sprite->setScale(1);
+	_sprite->setAnchorPoint(Vec2(0.5, 0.25));
 	PlayerCharacter::addChild(_sprite);
 	_sprite->retain();
 
@@ -58,33 +61,30 @@ void PlayerCharacter::update(float dt) {
 
 	if (!_way.empty())
 	{
-		if (_way.front()->isDone())
+		if (_way.front().second == 0)
 		{
-			_way.front()->release();
-			_way.pop();
-
-			if (_way.size() <= 1)
+			if (_state != run || _way.size() == 1)
 			{
-				if (!_way.empty())
-					_way.front()->setDuration(1);
 				changeState(walk);
+				_way.front().first->setDuration(_way.front().first->getDuration() * 3);
 			}
-			else changeState(run);
+			this->runAction(_way.front().first);
+			_way.front().second = 1;
+		}
+		else if (_way.front().first->isDone())
+		{
+			_way.front().first->release();
+			_way.pop_front();
 
 			if (!_way.empty())
-				this->runAction(_way.front());
-		}
-		else if (_state == idle)
-		{
-			_way.front()->setDuration(1);
-			this->runAction(_way.front());
-			changeState(walk);
+				_way.front().second = 0;
+
+			if (_way.size() > 2)
+				changeState(run);
 		}
 	} else {
 		changeState(idle);
 		unscheduleUpdate();
-		/*_animationSet->release();
-		_sprite->release();*/
 	}
 }
 
@@ -131,11 +131,16 @@ void PlayerCharacter::goTo(Vec2 where) {
 	Size mapSize = scene->getMapSize();
 	std::vector<std::vector<int> > binaryMap = scene->getMapMatrix();
 
-	if (binaryMap[where.x][where.y])
+	if ((binaryMap[where.x][where.y]) && (binaryMap[getPositionInTile().x][getPositionInTile().y]))
 	{
+		if (!_way.empty())
+			this->stopAction(_way.front().first);
+
 		while (!_way.empty())
-			_way.pop();
-		unscheduleUpdate();
+		{
+			_way.back().first->release();
+			_way.pop_back();
+		}
 
 		std::vector<std::vector<Vec2> > root;
 		std::vector<std::vector<int> > distance;
@@ -154,7 +159,7 @@ void PlayerCharacter::goTo(Vec2 where) {
 		root[where.x][where.y] = where;
 		distance[where.x][where.y] = 0;
 
-		while (!q.empty())
+		while (!q.empty() && q.front() != getPositionInTile())
 		{
 			Vec2 current = q.front();
 			q.pop();
@@ -227,18 +232,33 @@ void PlayerCharacter::goTo(Vec2 where) {
 		}
 
 		Vec2 current = this->getPositionInTile();
+		int i = 0;
 		while (current != where)
 		{
-			Vec2 step = root[current.x][current.y] - current;
-			Vec2 stepInPixels = Vec2(step.x * tileSize.width, step.y * tileSize.height);
-			MoveBy *move = MoveBy::create(0.3f, stepInPixels);
+			Vec2 step = root[current.x][current.y]; //- current;
+			Vec2 stepInPixels = Vec2((step.x + 0.5) * tileSize.width, (step.y + 0.5) * tileSize.height);
+
+			MoveTo *move;
+
+			if (!_way.empty())
+				move = MoveTo::create(0.3f, stepInPixels);
+			else
+				move = MoveTo::create((abs(stepInPixels.x - getPosition().x) / tileSize.width) * 0.3f, stepInPixels);
 
 			move->retain();
-			_way.push(move);
+			_way.push_back(std::pair<MoveTo*, int>(move, i));
 
 			current = root[current.x][current.y];
+
+			if (current == where)
+				_way.back().second = 0;
 		}
 
 		scheduleUpdate();
 	}
+}
+
+void PlayerCharacter::stopMoving()
+{
+	this->goTo(this->getPositionInTile());
 }
