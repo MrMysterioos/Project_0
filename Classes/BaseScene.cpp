@@ -108,9 +108,11 @@ bool BaseScene::init() {
 
 	auto actors = li->getActorMap();
 	auto playerRole = actors.at("Sven");
-	_player = PlayerCharacter::create(playerRole.objInf);
-	_player->setPositionInTile(Vec2(23, 8));
+	_player = PlayerCharacter::create();
+	_player = PlayerCharacter::create();
 	this->addChild(_player);
+	_player->init(playerRole.objInf);
+	_player->setPositionInTile(Vec2(6, 4));
 	
 	// camera
 	Node * dummy = Node::create();
