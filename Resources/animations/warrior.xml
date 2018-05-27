@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Animations>
   <animation key="idle" source="textures/warrior_idle.png" width="64" height="64" duration="0.2" reverce="false" />
-  <animation key="walk" source="textures/warrior_run.png" width="64" height="64" duration="0.1" reverce="false" />
+  <animation key="walk" source="textures/warrior_walk.png" width="64" height="64" duration="0.1" reverce="false" />
   <animation key="run" source="textures/warrior_run.png" width="64" height="64" duration="0.1" reverce="false" />
 </Animations>

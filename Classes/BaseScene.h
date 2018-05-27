@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include "PlayerCharacter.h"
 
 using namespace cocos2d;
 
@@ -63,39 +64,11 @@ private:
 	void _initActByResult(bool result);
 	void _initTasksBattleAct();
 
-
-	//*********
-	//ВСПОМОГАТЕЛЬНЫЙ КОД
-	//P.S. БУДЕТ УДАЛЕН ПОСЛЕ РЕЛИЗА
-	//*********
-
-	void d_onMouseDown(Event * event);
-
-	void d_update(float dt);
-
-	void d_initActor();
-
-	//функция задания вектора пути перемещения
-	//применяется волновой алгоритм
-	//применяются два аргумента а - начальная точка, b - конечная
-	bool d_setWayCoordinate(Vec2 a, Vec2 b);
-
-	//функция инициализации вектора представления карты
-	void d_initMapWay();
-
-	//конвертирует из тайл-координат в пиксельную координату
-	Vec2 d_convert(Vec2 vec);
-
-	//функция, которая определяет зашла ли точка from за to
-	//где velocity направление, в котором должна двигаться точка
-	//используется и для оси x и для оси y по-отдельности
-	bool d_isBelong(int velocity, float from, float to);
-
 public:
 	//константа, обозначающая препятствие на векторе пути перемещения
-	const int WALL = -1;
+	const int WALL = 0;
 	//константа, обозначающая возможность прохода на векторе пути перемещения
-	const int BLANK = -2;
+	const int BLANK = 1;
 
 private:
 	TMXTiledMap * _map;
@@ -105,6 +78,8 @@ private:
 
 	//вектор представления карты в тайл-координатах виде
 	std::vector< std::vector<int> > _path;
+
+	PlayerCharacter *_player;
 
 	//*********
 	//НАРАБОТКИ
@@ -127,21 +102,4 @@ private:
 
 	//номер акта в игре
 	int _actID;
-
-	//*********
-	//ВСПОМОГАТЕЛЬНЫЙ КОД
-	//P.S. БУДЕТ УДАЛЕН ПОСЛЕ РЕЛИЗА
-	//*********
-
-	//вектор пути перемещения в тайл-координатах
-	std::vector<Vec2> _way;
-
-	Sprite * _actor;
-	float _speed;
-
-	//позиция персонажа относительно карты в тайл-координатах
-	Vec2 _posActorAt;
-
-	//переменная, которая перемещает нас по _way в update()
-	int _inc;
 };

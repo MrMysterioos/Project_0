@@ -1,6 +1,8 @@
 #include "MenuScene.h"
 #include "SimpleAudioEngine.h"
 #include "AnimationSet.h"
+#include "LevelInfo.h"
+#include "NoPlayerCharacter.h"
 #include "BaseScene.h"
 
 USING_NS_CC;
@@ -75,6 +77,7 @@ void MenuScene::onEnter() {
 	auto seq = Sequence::create(act1, act2, nullptr);
 	auto rep = RepeatForever::create(seq);
 	auto action = test->runAction(rep);
+
 }
 
 void MenuScene::menuCloseCallback(Ref* pSender)

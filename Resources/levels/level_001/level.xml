@@ -21,7 +21,7 @@
     <actor id="chest" template="large_wood_chest">
       <behavior act_id="-1" name="mystery chest" team="neutral" />
     </actor>
-    
+
     <actor id="campfire" template="large_campfire">
       <behavior act_id="-1" name="campfire" team="neutral" />
     </actor>

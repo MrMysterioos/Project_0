@@ -16,6 +16,7 @@ class GameInfo : public Ref {
 public:
 
 	/**
+
 	 * @brief Метод, возвращающий экземпляр синглтона GameInfo
 	 *
 	 */
