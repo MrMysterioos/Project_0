@@ -5,9 +5,9 @@ USING_NS_CC;
 
 NoPlayerCharacter::NoPlayerCharacter() {};
 
-NoPlayerCharacter *NoPlayerCharacter::create(ObjectInfo objInfo) {
+NoPlayerCharacter *NoPlayerCharacter::create() {
 	NoPlayerCharacter *_char = new (std::nothrow) NoPlayerCharacter();
-	if (_char && _char->init(objInfo))
+	if (_char)
 	{
 		_char->autorelease();
 		return _char;
@@ -19,6 +19,8 @@ NoPlayerCharacter *NoPlayerCharacter::create(ObjectInfo objInfo) {
 bool NoPlayerCharacter::init(ObjectInfo objInfo) {
 
 	_objInfo = objInfo;
+
+	_sprite = Sprite::create();
 
 	_healthPoints			= atoi(_objInfo.getAttribute("health").c_str());
 	_speed					= atoi(_objInfo.getAttribute("speed").c_str());

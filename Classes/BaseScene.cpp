@@ -1,7 +1,9 @@
 ﻿#include "BaseScene.h"
 #include "GameInfo.h"
 #include "DialogScene.h"
+#include "DialogSceneEnd.h"
 #include "BattleScene.h"
+#include "NoPlayerCharacter.h"
 #include "cocos2d.h"
 
 using namespace std;
@@ -68,7 +70,6 @@ bool BaseScene::init() {
 		}
 	}
 
-
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	auto camera = this->getDefaultCamera();
 	camera->setPosition(Vec2(visibleSize.width / 2.f, visibleSize.height / 2.f));
@@ -78,17 +79,9 @@ bool BaseScene::init() {
 	mouseListener->onMouseDown = CC_CALLBACK_1(BaseScene::onMouseDown, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(mouseListener, this);
 
-	//èíèöèàëèçàöèÿ ëåéáëà, ïîêàçûâàþùåå òåêóùåå çàäàíèå
-	_labelTask = Label::createWithTTF("", "fonts/Pixel.ttf", 35);
-	_labelTask->setPosition(camera->getPosition() - Vec2(350, -200));
-	_labelTask->setColor(Color3B::RED);
-	_labelTask->setOpacity(0);
-	this->addChild(_labelTask);
 
-	_initActScene(_actID);
-
-	auto listener = EventListenerCustom::create("game_custom_event1", [=](EventCustom* event) {
-		std::string str("Custom event 1 received, ");
+	auto listener = EventListenerCustom::create("BaseScene", [=](EventCustom* event) {
+		std::string str("");
 		char* buf = static_cast<char*>(event->getUserData());
 		str += buf;
 		if (getReturnScene(str) == "dialog") {
@@ -109,7 +102,6 @@ bool BaseScene::init() {
 	auto actors = li->getActorMap();
 	auto playerRole = actors.at("Sven");
 	_player = PlayerCharacter::create();
-	_player = PlayerCharacter::create();
 	this->addChild(_player);
 	_player->init(playerRole.objInf);
 	_player->setPositionInTile(Vec2(6, 4));
@@ -127,8 +119,18 @@ bool BaseScene::init() {
 	auto x = this->getDefaultCamera()->getPositionZ();
 	getDefaultCamera()->setPositionZ( x / 2);
 
-	this->schedule(schedule_selector(BaseScene::update));
+	_updateCamera();
 
+	//èíèöèàëèçàöèÿ ëåéáëà, ïîêàçûâàþùåå òåêóùåå çàäàíèå
+	_labelTask = Label::createWithTTF("", "fonts/Pixel.ttf", 15);
+	_labelTask->setPosition(this->getDefaultCamera()->getPosition() - Vec2(150, -150));
+	_labelTask->setColor(Color3B::RED);
+	this->addChild(_labelTask);
+
+	_initActScene(_actID);
+
+	this->schedule(schedule_selector(BaseScene::update));
+	
 	return true;
 }
 
@@ -161,6 +163,7 @@ void BaseScene::_initActScene(int id) {
 
 		if (_typeAct == "defeat") {
 			_tasks.insert(std::pair<std::string, bool>(target, false));
+			_enemys.push_back(target);
 		}
 
 		if (_task.size() > unsigned(10 * count)) {
@@ -189,7 +192,7 @@ void BaseScene::_initActScene(int id) {
 	auto obj = objectGroup->getObject(_targetName);
 	auto del = _map->getTileSize();
 
-	_posTarget = Vec2((obj.at("x").asFloat()) / del.width, _map->getMapSize().height - (obj.at("y").asFloat()) / del.width-2);
+	_posTarget = Vec2((obj.at("x").asFloat()) / del.width, (obj.at("y").asFloat()) / del.width + 1);
 }
 
 void BaseScene::_initActByResult(int result) {
@@ -242,7 +245,34 @@ void BaseScene::_initActByResult(bool result) {
 }
 
 void BaseScene::_initTasksBattleAct() {
-	int count = 0;
+	
+
+	if(!_enemys.empty()) {
+		_enemys.erase(_enemys.begin());
+	}
+
+	if (_enemys.empty()) {
+		_posTarget = Vec2(0, 0);
+		_actID++;
+		_initActScene(_actID);
+		return;
+	} 
+
+	_posTarget = Vec2(0, 0);
+
+	auto quest = GameInfo::getInstance()->getLevel()->getQuest();
+
+	auto transition = quest.find(_actID)->second.trans.begin();
+	auto tasks = transition->tasks;
+
+	auto _targetName = (tasks.begin()+1)->getAttribute("target");
+	auto objectGroup = _map->getObjectGroup("Actors");
+	auto obj = objectGroup->getObject(_targetName);
+	auto del = _map->getTileSize();
+
+	_posTarget = Vec2((obj.at("x").asFloat()) / del.width, (obj.at("y").asFloat()) / del.width + 1);
+
+	/*int count = 0;
 	for (auto i : _tasks) {
 		if (count == _countTasks) {
 			i.second = true;
@@ -275,7 +305,26 @@ void BaseScene::_initTasksBattleAct() {
 	auto objectGroup = _map->getObjectGroup("Actors");
 	auto obj = objectGroup->getObject(_targetName);
 	auto del = _map->getTileSize();
-	_posTarget = Vec2((obj.at("x").asFloat()) / del.width, _map->getMapSize().height - (obj.at("y").asFloat()) / del.width - 2);
+	_posTarget = Vec2((obj.at("x").asFloat()) / del.width, _map->getMapSize().height - (obj.at("y").asFloat()) / del.width - 2);*/
+}
+
+void BaseScene::_updateCamera() {
+	auto camera = this->getDefaultCamera();
+	auto visibleSize = Director::getInstance()->getVisibleSize();
+	float Scale = posCamZ / getDefaultCamera()->getPositionZ();
+
+	if (_player->getPosition().x < visibleSize.width / (2.f * Scale)) {
+		camera->setPositionX(visibleSize.width / (2.f * Scale));
+	}
+	else if (_player->getPositionX() > _map->getMapSize().width * _map->getTileSize().width - (visibleSize.width / (2.f * Scale)))
+	{
+		camera->setPositionX(_map->getMapSize().width * _map->getTileSize().width
+			- (visibleSize.width / (2.f * Scale)));
+	}
+
+	if (_player->getPositionY() < visibleSize.height / 4.f) {
+		camera->setPositionY(visibleSize.height / 4.f);
+	}
 }
 
 void BaseScene::GameOver() {
@@ -301,21 +350,48 @@ void BaseScene::onMouseDown(Event * event) {
 
 void BaseScene::update(float dt) {
 
-	auto camera = this->getDefaultCamera();
-	auto visibleSize = Director::getInstance()->getVisibleSize(); 
-	float Scale = posCamZ / getDefaultCamera()->getPositionZ();
+	_updateCamera();
 
-	if (_player->getPosition().x < visibleSize.width / (2.f * Scale)) {
-		camera->setPositionX(visibleSize.width / (2.f * Scale));
-	}
-	else if (_player->getPositionX() > _map->getMapSize().width * _map->getTileSize().width - (visibleSize.width / (2.f * Scale )))
-	{
-			camera->setPositionX(_map->getMapSize().width * _map->getTileSize().width
-				- (visibleSize.width / (2.f * Scale)));
-	}
+	_labelTask->setPosition(this->getDefaultCamera()->getPosition() - Vec2(150, -150));
 
-	if (_player->getPositionY() < visibleSize.height / 4.f) {
-		camera->setPositionY(visibleSize.height / 4.f);
+	if (_player->getPositionInTile() == _posTarget) {
+		char buffer[10];
+		sprintf_s(buffer, 10, "=%d", _actID);
+
+		_player->stopMoving();
+
+		_posTarget = Vec2(0, 0);
+
+		if (_typeAct == "talk") {
+
+			if (_actID == 0) {
+
+				auto scene = DialogScene::createScene();
+				EventCustom event("DialogScene");
+				event.setUserData(buffer);
+				_eventDispatcher->dispatchEvent(&event);
+
+				Director::getInstance()->pushScene(scene);
+			}
+			else {
+
+				auto scene = DialogSceneEnd::createScene();
+				EventCustom event("DialogSceneEnd");
+				event.setUserData(buffer);
+				_eventDispatcher->dispatchEvent(&event);
+
+				Director::getInstance()->pushScene(scene);
+			}
+		}
+		else if (_typeAct == "defeat") {
+			//TODO call to event BattleScene
+			auto scene = BattleScene::createScene();
+			EventCustom event("BattleScene");
+			event.setUserData(buffer);
+			_eventDispatcher->dispatchEvent(&event);
+
+			Director::getInstance()->pushScene(scene);
+		}
 	}
 }
 

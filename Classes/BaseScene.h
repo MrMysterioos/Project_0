@@ -64,6 +64,8 @@ private:
 	void _initActByResult(bool result);
 	void _initTasksBattleAct();
 
+	void _updateCamera();
+
 public:
 	//константа, обозначающая препятствие на векторе пути перемещения
 	const int WALL = 0;
@@ -84,7 +86,7 @@ private:
 	//*********
 	//НАРАБОТКИ
 	//*********
-
+	std::vector<std::string> _enemys;
 	std::map<std::string, bool> _tasks;
 	int _countTasks;
 

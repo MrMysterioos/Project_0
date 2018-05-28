@@ -16,12 +16,12 @@ bool DialogScene::init() {
 	background->setPosition(Director::getInstance()->getVisibleSize() / 2);
 	this->addChild(background);
 
-	// add mainMenu
-	Menu* mainMenu = Menu::create();
-	mainMenu->setPosition(Vec2::ZERO);
-	this->addChild(mainMenu);
 
 	std::string fontName("fonts/Pixel.ttf");
+
+	mainMenu = Menu::create();
+	mainMenu->setPosition(Vec2::ZERO);
+	this->addChild(mainMenu);
 
 	// add war button
 	Label* labelWar = Label::createWithTTF("1. Go to the war", fontName, 36);
@@ -43,7 +43,7 @@ bool DialogScene::init() {
 	// add peace button
 	Label* lavelPeace = Label::createWithTTF("2. Don't go to the war", fontName, 36);
 	MenuItemLabel* peaceButton = MenuItemLabel::create(lavelPeace);
-	peaceButton->setPosition(750, 200); 
+	peaceButton->setPosition(750, 200);
 	peaceButton->setCallback([&](cocos2d::Ref *sender) {
 		EventCustom event("BaseScene");
 
@@ -68,6 +68,36 @@ bool DialogScene::init() {
 
 	return true;
 }
+
+/*
+void DialogScene::_init(int id) {
+
+	// add mainMenu
+
+	mainMenu = Menu::create();
+	mainMenu->setPosition(Vec2::ZERO);
+	this->addChild(mainMenu);
+
+	if (id == 0) {
+	}
+	else {
+		Label* labelWin = Label::createWithTTF("1. Take the reward", fontName, 36);
+		MenuItemLabel* winButton = MenuItemLabel::create(labelWin);
+		winButton->setPosition(750, 300);
+		winButton->setCallback([&](cocos2d::Ref *sender) {
+			EventCustom event("BaseScene");
+
+			char buffer[10];
+			char nameScene[] = "dialog";
+			sprintf_s(buffer, 10, "%s=%d", nameScene, 1);
+
+			event.setUserData(buffer);
+			_eventDispatcher->dispatchEvent(&event);
+			Director::getInstance()->popScene();
+		});
+		mainMenu->addChild(winButton);
+	}
+}*/
 
 void DialogScene::update(float dt) {
 

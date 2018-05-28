@@ -8,7 +8,7 @@
 
 using namespace cocos2d;
 
-class DialogScene : public GameScene {
+class DialogSceneEnd : public GameScene {
 public:
 	static cocos2d::Scene * createScene();
 
@@ -24,9 +24,8 @@ public:
 
 	void update(float dt);
 
-	CREATE_FUNC(DialogScene);
-private:
-	void _init(int id);
+	CREATE_FUNC(DialogSceneEnd);
+
 private:
 	int _actID;
 	Menu * mainMenu;

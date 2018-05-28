@@ -6,14 +6,15 @@ USING_NS_CC;
 
 class NoPlayerCharacter : public Character {
 public:
-	static NoPlayerCharacter *create(ObjectInfo);
+	static NoPlayerCharacter *create();
 
 	bool setBehavior(Behavior);
+
+	bool init(ObjectInfo);
 
 private:
 	NoPlayerCharacter();
 
-	bool init(ObjectInfo);
 
 	//void update(float) override;
 
