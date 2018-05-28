@@ -21,6 +21,9 @@ bool NoPlayerCharacter::init(ObjectInfo objInfo) {
 	_objInfo = objInfo;
 
 	_sprite = Sprite::create();
+	_sprite->setAnchorPoint(Vec2(0.5, 0.25));
+	NoPlayerCharacter::addChild(_sprite);
+	_sprite->retain();
 
 	_healthPoints			= atoi(_objInfo.getAttribute("health").c_str());
 	_speed					= atoi(_objInfo.getAttribute("speed").c_str());
@@ -36,6 +39,8 @@ bool NoPlayerCharacter::init(ObjectInfo objInfo) {
 	Animation *_animation = _animationSet->getAnimation("idle");
 	Animate *_animate = Animate::create(_animation);
 	_sprite->runAction(RepeatForever::create(_animate));
+	_sprite->retain();
+	this->setRotationSkewY(-180);
 
 	return true;
 }

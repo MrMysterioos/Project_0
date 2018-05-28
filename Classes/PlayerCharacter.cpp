@@ -33,7 +33,6 @@ bool PlayerCharacter::init(ObjectInfo objInfo) {
 	_animationSet->retain();
 
 	_sprite = Sprite::create();
-	_sprite->setScale(1);
 	_sprite->setAnchorPoint(Vec2(0.5, 0.25));
 	PlayerCharacter::addChild(_sprite);
 	_sprite->retain();
