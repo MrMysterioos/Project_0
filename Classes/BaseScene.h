@@ -63,6 +63,7 @@ private:
 	void _initActByResult(int result);
 	void _initActByResult(bool result);
 	void _initTasksBattleAct();
+	void _initNPC();
 
 	void _updateCamera();
 

@@ -101,8 +101,10 @@ bool BaseScene::init() {
 
 	auto actors = li->getActorMap();
 	auto playerRole = actors.at("Sven");
+
 	_player = PlayerCharacter::create();
 	this->addChild(_player);
+	_player->setName("Actor");
 	_player->init(playerRole.objInf);
 	_player->setPositionInTile(Vec2(6, 4));
 	
@@ -128,10 +130,41 @@ bool BaseScene::init() {
 	this->addChild(_labelTask);
 
 	_initActScene(_actID);
+	_initNPC();
 
 	this->schedule(schedule_selector(BaseScene::update));
 	
 	return true;
+}
+
+void BaseScene::_initNPC() {
+
+	auto gi = GameInfo::getInstance();
+	auto li = gi->getLevel();
+
+	auto actors = li->getActorMap();
+	auto playerRole = actors.at("Sven");
+
+	auto Sven = NoPlayerCharacter::create();
+	this->addChild(Sven);
+	Sven->setName("Sven");
+	Sven->init(playerRole.objInf);
+	Sven->setBehavior(playerRole.getBehavior(-1));
+	Sven->setPositionInTile(Vec2(20, 8));
+
+	auto Copa = NoPlayerCharacter::create();
+	this->addChild(Copa);
+	Copa->setName("Copa");
+	Copa->init(playerRole.objInf);
+	Copa->setBehavior(playerRole.getBehavior(-1));
+	Copa->setPositionInTile(Vec2(4, 18));
+
+	auto Roka = NoPlayerCharacter::create();
+	this->addChild(Roka);
+	Roka->setName("Roka");
+	Roka->init(playerRole.objInf);
+	Roka->setBehavior(playerRole.getBehavior(-1));
+	Roka->setPositionInTile(Vec2(6, 18));
 }
 
 void BaseScene::_initActScene(int id) {
@@ -241,6 +274,10 @@ void BaseScene::_initActByResult(bool result) {
 	else {
 		GameOver();
 		_posTarget = Vec2(0, 0);
+		this->removeChildByName("Actor");
+		auto x = _player;
+		auto test = 10;
+		//this->unschedule(schedule_selector(BaseScene::update));
 	}
 }
 
@@ -249,9 +286,11 @@ void BaseScene::_initTasksBattleAct() {
 
 	if(!_enemys.empty()) {
 		_enemys.erase(_enemys.begin());
+		this->removeChildByName("Copa");
 	}
 
 	if (_enemys.empty()) {
+		this->removeChildByName("Roka");
 		_posTarget = Vec2(0, 0);
 		_actID++;
 		_initActScene(_actID);
@@ -313,16 +352,16 @@ void BaseScene::_updateCamera() {
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	float Scale = posCamZ / getDefaultCamera()->getPositionZ();
 
-	if (_player->getPosition().x < visibleSize.width / (2.f * Scale)) {
+	if (camera->getPosition().x < visibleSize.width / (2.f * Scale)) {
 		camera->setPositionX(visibleSize.width / (2.f * Scale));
 	}
-	else if (_player->getPositionX() > _map->getMapSize().width * _map->getTileSize().width - (visibleSize.width / (2.f * Scale)))
+	else if (camera->getPositionX() > _map->getMapSize().width * _map->getTileSize().width - (visibleSize.width / (2.f * Scale)))
 	{
 		camera->setPositionX(_map->getMapSize().width * _map->getTileSize().width
 			- (visibleSize.width / (2.f * Scale)));
 	}
 
-	if (_player->getPositionY() < visibleSize.height / 4.f) {
+	if (camera->getPositionY() < visibleSize.height / 4.f) {
 		camera->setPositionY(visibleSize.height / 4.f);
 	}
 }
@@ -345,52 +384,56 @@ void BaseScene::onMouseDown(Event * event) {
 	int tileX = int(((e->getCursorX() + x * Scale) / (_map->getTileSize().width * Scale)));
 	int tileY = int((e->getCursorY() + y * Scale) / (_map->getTileSize().height * Scale));
 
-	_player->goTo(Vec2(tileX, tileY));
+	if (this->getChildByName("Actor")) {
+		_player->goTo(Vec2(tileX, tileY));
+	}
 }
 
 void BaseScene::update(float dt) {
-
+	
 	_updateCamera();
 
 	_labelTask->setPosition(this->getDefaultCamera()->getPosition() - Vec2(150, -150));
 
-	if (_player->getPositionInTile() == _posTarget) {
-		char buffer[10];
-		sprintf_s(buffer, 10, "=%d", _actID);
+	if (this->getChildByName("Actor")) {
+		if (_player->getPositionInTile() == _posTarget) {
+			char buffer[10];
+			sprintf_s(buffer, 10, "=%d", _actID);
 
-		_player->stopMoving();
+			_player->stopMoving();
 
-		_posTarget = Vec2(0, 0);
+			_posTarget = Vec2(0, 0);
 
-		if (_typeAct == "talk") {
+			if (_typeAct == "talk") {
 
-			if (_actID == 0) {
+				if (_actID == 0) {
 
-				auto scene = DialogScene::createScene();
-				EventCustom event("DialogScene");
+					auto scene = DialogScene::createScene();
+					EventCustom event("DialogScene");
+					event.setUserData(buffer);
+					_eventDispatcher->dispatchEvent(&event);
+
+					Director::getInstance()->pushScene(scene);
+				}
+				else {
+
+					auto scene = DialogSceneEnd::createScene();
+					EventCustom event("DialogSceneEnd");
+					event.setUserData(buffer);
+					_eventDispatcher->dispatchEvent(&event);
+
+					Director::getInstance()->pushScene(scene);
+				}
+			}
+			else if (_typeAct == "defeat") {
+				//TODO call to event BattleScene
+				auto scene = BattleScene::createScene();
+				EventCustom event("BattleScene");
 				event.setUserData(buffer);
 				_eventDispatcher->dispatchEvent(&event);
 
 				Director::getInstance()->pushScene(scene);
 			}
-			else {
-
-				auto scene = DialogSceneEnd::createScene();
-				EventCustom event("DialogSceneEnd");
-				event.setUserData(buffer);
-				_eventDispatcher->dispatchEvent(&event);
-
-				Director::getInstance()->pushScene(scene);
-			}
-		}
-		else if (_typeAct == "defeat") {
-			//TODO call to event BattleScene
-			auto scene = BattleScene::createScene();
-			EventCustom event("BattleScene");
-			event.setUserData(buffer);
-			_eventDispatcher->dispatchEvent(&event);
-
-			Director::getInstance()->pushScene(scene);
 		}
 	}
 }
